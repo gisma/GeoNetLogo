@@ -17,16 +17,9 @@ to setup
 
   ; if goals are build automatically on the streets
   if g-streets [
-    if triangle-roads [create-roads]
-    if not triangle-roads [ask n-of n-walker patches with [pcolor = green]
-      [set pcolor gray
-       set popularity 1000000
-       set streets 1
-      ]
-    set roads patches with [pcolor = gray]
-    ]
+
     set g-orange false
-    if count patches with [pcolor = gray] = 0 [create-roads]
+    if preset-roads != "none" [create-roads
  ; create walker and goals on structures (roads)
     ask  n-of n-walker roads [
       sprout-walkers 1 [ if g-streets [set goal one-of patches with [streets = 1]]
@@ -36,11 +29,26 @@ to setup
         set shape "person student"
       ]
     ]
+
+    ]
+    if preset-roads = "none" [
+        ask  n-of n-walker patches [
+      sprout-walkers 1 [ set goal one-of patches
+      if show-goal [ask goal [set pcolor yellow]]
+        set size 4
+        set color 45
+        set shape "person student"
+      ]
+    ]
+     if not message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
+    ]
   ]
 
   ; if goals are orange
   if g-orange [
   set g-streets false
+    if preset-roads != "none" [create-roads]
+
     ask n-of 3 patches with [pcolor = green][set pcolor orange]
     ask  n-of n-walker patches [sprout-walkers 1 [
     if g-orange [set goal one-of patches with [pcolor = orange]]
@@ -48,8 +56,18 @@ to setup
     set color 45
     set shape "person student"]
     ]
+    if not message [user-message (word "Es wurden drei zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
   ]
+  if not g-orange and not g-streets [
+    if not message [user-message (word "Es wurden kein Szenario g-roads oder g-orange ausgwählt.\n Habe nix zu tun")]
+      ask  n-of n-walker patches [sprout-walkers 1 [
+        set color white
+        set size random 10
+        set shape "sheep"
 
+      ]
+
+  ]]
   ; finsihed so reset ticks
   reset-ticks
 end
@@ -151,27 +169,42 @@ end
 
 ; create infrastructure
 to create-roads
+   if preset-roads = "triangle" [
    set roads patches with
-     [pxcor = -20 or pycor = 20 or pycor = pxcor - 2
-   or pxcor = -21 or pycor = 21 or pycor = pxcor - 3
-   or pxcor = -22 or pycor = 22 or pycor = pxcor - 4
-   or pxcor = -23 or pycor = 23 or pycor = pxcor - 5
-   or pxcor = -24 or pycor = 24 or pycor = pxcor - 6
-  ]
+     [pxcor = -20 or pycor = 20 or pycor = pxcor - 2 ]
 
-
-  ask roads
-    [ paint-patches patches in-radius 5 ]
-  display
-
-to paint-patches [p]
-  ask p [ set pcolor [color] of myself ]
-end
-
-  ask roads [set pcolor gray
+  ask roads [paint-p patches in-radius road-width
+             set pcolor gray
              set popularity 1000000
              set streets 1
              ]
+  ]
+   if preset-roads = "square" [
+   set roads patches with
+     [pxcor = -20 or pycor = 20 or pxcor = 20 or pycor = -20]
+
+  ask roads [paint-p patches in-radius road-width
+             set pcolor gray
+             set popularity 1000000
+             set streets 1
+             ]
+  ]
+
+   if preset-roads = "X" [
+   set roads patches with
+     [pxcor = pycor  or (-1 * pxcor) =  pycor ]
+
+  ask roads [paint-p patches in-radius road-width
+             set pcolor gray
+             set popularity 1000000
+             set streets 1
+             ]
+  ]
+
+end
+
+to paint-p [p]
+  ask p [ set pcolor gray]
 end
 
 to draw-world-items
@@ -267,9 +300,9 @@ NIL
 
 SLIDER
 10
-175
+215
 155
-208
+248
 walker-vision-dist
 walker-vision-dist
 1
@@ -309,7 +342,7 @@ CHOOSER
 p_color
 p_color
 "red" "orange" "green" "blue" "grey" "magenta"
-0
+4
 
 BUTTON
 15
@@ -337,7 +370,7 @@ line-width
 line-width
 0.2
 5
-2.2
+2.0
 0.2
 1
 NIL
@@ -345,9 +378,9 @@ HORIZONTAL
 
 SLIDER
 10
-105
+145
 155
-138
+178
 n-walker
 n-walker
 1
@@ -360,14 +393,14 @@ HORIZONTAL
 
 SLIDER
 10
-140
+180
 155
-173
+213
 walker-v-angle
 walker-v-angle
 1
 360
-31.0
+32.0
 1
 1
 NIL
@@ -386,56 +419,25 @@ vis-vision
 
 SWITCH
 175
-105
-295
-138
-g-streets
-g-streets
-0
-1
--1000
-
-SWITCH
-175
-135
-295
-168
-g-orange
-g-orange
-1
-1
--1000
-
-SWITCH
-10
 70
-155
+295
 103
-triangle-roads
-triangle-roads
-0
+g-streets
+g-streets
+1
 1
 -1000
 
-TEXTBOX
+SWITCH
 175
-10
-310
-110
-g-streets may used with default roads (triangle-roads on) or with drawn roads (triangle-roads on) \nNOTE you need to draw them before clicking GO
-10
-12.0
+100
+295
+133
+g-orange
+g-orange
+0
 1
-
-TEXTBOX
-175
-175
-315
-356
-g-orange may used with default roads (triangle-roads on) or with drawn roads (triangle-roads on) \nBy default 3 goals are predifined.  \nNOTE You may add or delete the new ORANGE goals with draw-world-items
-10
-25.0
-1
+-1000
 
 TEXTBOX
 5
@@ -459,14 +461,60 @@ TEXTBOX
 
 MONITOR
 15
-230
+255
 152
-275
+300
 No of gray patches
 waths
 17
 1
 11
+
+CHOOSER
+10
+100
+155
+145
+preset-roads
+preset-roads
+"triangle" "square" "X" "none"
+3
+
+SLIDER
+10
+70
+155
+103
+road-width
+road-width
+1
+6
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+200
+50
+350
+68
+Szenarien
+12
+0.0
+1
+
+SWITCH
+175
+255
+297
+288
+message
+message
+1
+1
+-1000
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -475,12 +523,12 @@ Rieke Ammoneit und Chris Reudenbach 2020
 
 ## Einleitung
 
-Alle Akteure, die räumlich interagieren, müsssen diese Räume überwinden und in folge erschließen. Geschieht dies regelmäßig und häufig entstehen Wege die diesen Strukturen zur Nutzung des erdgebundenen Raumes zur Verfügung stellen. Oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917]. 
+Alle Akteure, die räumlich interagieren, müsssen diese Räume überwinden und in folge erschließen. Geschieht dies regelmäßig und häufig entstehen Wege, die diesen Strukturen zur Nutzung des erdgebundenen Raumes zur Verfügung stellen. Oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917]. 
 
 Folgt man Helbig [5] gibt es ein breites Interesse über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung ist theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet [z.B. 3]. Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs mit einem gegebnen Raum und seiner Bewegungsabsichten. 
 Im Vorliegenden Falle soll die spontane Entstehung von Trampelpfaden in einem einfachen geometrischen Raumsetting untersucht werden. 
 
-Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Asls gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999] 
+Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999] 
 
 ## Fragestellung und Hypothese (ca. 100 Worte)
 
