@@ -132,19 +132,31 @@ to-report best-way-to [ destination ]
   ]
 end
 
+to avoid
+
+while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 1] > 0]
+ [ rt 12.5 ]
+
+end
 
 ; this procedure adapts the forward looking example of obstacles avoidance as presented by
+; Vision Cone example of the Netlogo Lib in addition some ideas are taken from
 ; Thomas Christy at Bangor University 2009 and modified by William John Teahan
 ; http://files.bookboon.com/ai/index.html
 ; https://files.bookboon.com/ai/Obstacle-Avoidance-1.html
-; google searc "netlogo obstacle avoidance" page 3
+; found by google search "netlogo obstacle avoidance" page 3
 to avoid-patches
+ ; visualisation of cone of sight
+ ; recolor all cone patches to the original colors
+ ; we have to do so because otherwise the last cone will remain
  ask patches with [pcolor = sky]
   [ set pcolor green ]
  ask patches with [pcolor = pink]
   [ set pcolor red ]
   ask patches with [pcolor = cyan]
   [ set pcolor gray ]
+ ; if visualisation of cones ist true
+ ; color the cone depending on the underlying patch classes
  if vis-vision [
   ask patches in-cone walker-vision-dist walker-v-angle [
     if pcolor = green
@@ -155,14 +167,28 @@ to avoid-patches
     [ set pcolor pink ]
   ]
 ]
+
+; start of obstacle avoidance
+; count patches in cone that are obstacles if there is at least one obstacle
+; turn 12.5 degrees
+; do this until there is no obstacle in cone
 while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 1] > 0]
  [ rt 12.5 ]
+
+ ;  error workaround for touching the boundary of world that produces the "nobody" error
+ ; we just check the patch in front and only if it is not nobody we head on
  let try  one-of patches in-cone walker-vision-dist walker-v-angle with [obstacle != 1]
  if try != nobody
+
+ ; turn to one of the patches in the cone WITHOUT (!=1) an obstacle
   [face one-of patches in-cone walker-vision-dist walker-v-angle with [obstacle != 1]]
+
+  ; last check if there is no obstacle step 1 forward
+  ; otherwise step 1 backwards and turn 90 deg
   ifelse [obstacle] of patch-ahead 1 != 1
   [fd 1 ]
   [bk 1 lt 90]
+
 end
 
 ; #####################################################
@@ -307,7 +333,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-30.0
+125.0
 1
 1
 NIL
@@ -330,7 +356,7 @@ SWITCH
 363
 show-goal
 show-goal
-1
+0
 1
 -1000
 
@@ -342,7 +368,7 @@ CHOOSER
 p_color
 p_color
 "red" "orange" "green" "blue" "grey" "magenta"
-4
+1
 
 BUTTON
 15
@@ -400,7 +426,7 @@ walker-v-angle
 walker-v-angle
 1
 360
-32.0
+31.0
 1
 1
 NIL
@@ -533,14 +559,15 @@ Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, 
 ## Fragestellung und Hypothese (ca. 100 Worte)
 
 
-Die Nutzerinnen solcher sind gleichzeitig die Erschafferinnen solcher Wege. In der vorliegenden Studie soll untersucht werden inwieweit (1) Trampelpfade im Raum überhaupt enstehen und (2) wie sie sich durch Hinzufügen von Zielen und Hindernissen verändern.
+Die Nutzerinnen solcher sind gleichzeitig die Erschafferinnen solcher Wege. In der vorliegenden Studie soll untersucht werden wie sich die Geometrie von Zielen und die Wahrnehmungsfähigkeit der Akteure auf die räumlöichen Muster und Quantität der Trampfpade auswirkt.
+
 Es werden folgende Hypothesen aufgestellt:
 
-1. Nur augrund des Willens zur Optimierung (kürzester Weg) und des daraus kontinuierlich enstehenden Trittmuster die Attraktoren darstellen enstehen optimierte (hexagonale) Wegenetze 
+1. Veränderungen der Anordnung von Zielen in einem isommorphen Raum führen zu Veränderungen der Trampelpfadstruktur
 
-2. Das Hinzufügen von Zielen reduziert dieses Wegenetz auf ein ökonomisches Minimum
+2. Verändreungen der Wahrnehmung führen zu Veränderungen der Trampelpfadstruktur
 
-3. Strassennetze werden nur genutzt wenn der Vorteil aus Sicht des Akteurs überwiegt.
+3. Die enstehenden Muster sind Optimierungen der beiden Bedingungen 
 
 
 ## Methoden und Anwendung (ca. 750 Worte)
@@ -551,6 +578,8 @@ Teahan (2010a)
 
 
 ## Ergebnisse (ca. 750 Worte)
+
+## Diskussion
 
 
 

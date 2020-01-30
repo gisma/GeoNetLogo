@@ -3,7 +3,7 @@
 ##  Kursziele
 In dieser Übung soll folgende Inhalte erarbeitet werden:
 * Die Fähigkeit geographische Modellierung zu verstehen, anzuwenden und zu interpretieren
-* Die Fähigkeit ruam-zeitlich zu beobachten und diese Beobachtungen zu vereinfachen um zu allgemeingültigen Aussagen zu formen
+* Die Fähigkeit raum-zeitlich zu beobachten und diese Beobachtungen zu vereinfachen um zu allgemeingültigen Aussagen zu formen
 * Identifikation und Bewertung interdisziplinärer Forschungsaussagen zur Interpretation der eigenen Beobachtung und Abstraktionsleitung 
 * Die Fertigkeit diese Abstraktion mit einem geeigneten Softwarewerkzeug abzubilden
 
