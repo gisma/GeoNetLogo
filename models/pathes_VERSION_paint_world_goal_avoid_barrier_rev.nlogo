@@ -14,7 +14,7 @@ to setup
   ask patches [ set pcolor green
   set obstacle 0
   ]
-
+  ;ask patches with [pxcor = max-pxcor or pxcor = min-pxcor or pycor = max-pycor or pycor = min-pycor] [set obstacle 1]
   ; if goals are build automatically on the streets
   if g-streets [
 
@@ -40,7 +40,7 @@ to setup
         set shape "person student"
       ]
     ]
-     if not message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
+     if message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
     ]
   ]
 
@@ -49,17 +49,17 @@ to setup
   set g-streets false
     if preset-roads != "none" [create-roads]
 
-    ask n-of 3 patches with [pcolor = green][set pcolor orange]
+    ask n-of 4 patches with [pcolor = green][set pcolor orange]
     ask  n-of n-walker patches [sprout-walkers 1 [
     if g-orange [set goal one-of patches with [pcolor = orange]]
     set size 4
     set color 45
     set shape "person student"]
     ]
-    if not message [user-message (word "Es wurden drei zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
+    if message [user-message (word "Es wurden vier zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
   ]
   if not g-orange and not g-streets [
-    if not message [user-message (word "Es wurden kein Szenario g-roads oder g-orange ausgwählt.\n Habe nix zu tun")]
+    if message [user-message (word "Es wurden kein Szenario g-roads oder g-orange ausgwählt.\n Habe nix zu tun")]
       ask  n-of n-walker patches [sprout-walkers 1 [
         set color white
         set size random 10
@@ -118,6 +118,8 @@ to-report best-way-to [ destination ]
   ; that would take me closer to my destination
 
   let visible-patches patches in-radius walker-vision-dist with [pcolor != red]
+  if popular = true
+      [set visible-patches patches in-radius walker-vision-dist with-max [popularity]]
   let visible-routes visible-patches with [ pcolor = gray ]
   let routes-that-take-me-closer visible-routes with [
     distance destination < [ distance destination - 1 ] of myself
@@ -198,35 +200,33 @@ to create-roads
    if preset-roads = "triangle" [
    set roads patches with
      [pxcor = -20 or pycor = 20 or pycor = pxcor - 2 ]
-
-  ask roads [paint-p patches in-radius road-width
-             set pcolor gray
-             set popularity 1000000
-             set streets 1
-             ]
   ]
    if preset-roads = "square" [
    set roads patches with
      [pxcor = -20 or pycor = 20 or pxcor = 20 or pycor = -20]
-
-  ask roads [paint-p patches in-radius road-width
-             set pcolor gray
-             set popularity 1000000
-             set streets 1
-             ]
   ]
-
    if preset-roads = "X" [
    set roads patches with
      [pxcor = pycor  or (-1 * pxcor) =  pycor ]
-
-  ask roads [paint-p patches in-radius road-width
-             set pcolor gray
+  ]
+  ask patches [ set pcolor orange
              set popularity 1000000
              set streets 1
              ]
-  ]
+end
 
+to makeExperiment
+  if experiment = "houseOfSantaClaus" [
+    ask patches with [pcolor = orange] [set pcolor  green]
+    ask patches at-points [[-35 10] [-35 -40] [0 40]  [35 10] [35 -40]] [ set pcolor orange]
+
+  ]
+end
+
+
+to   scale-popularity
+  ask patches with [pcolor != orange and pcolor != green and pcolor != red]
+  [ set pcolor scale-color gray popularity 100 1000]
 end
 
 to paint-p [p]
@@ -284,8 +284,8 @@ GRAPHICS-WINDOW
 50
 -50
 50
-0
-0
+1
+1
 1
 ticks
 45.0
@@ -333,48 +333,48 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-125.0
+18.0
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-150
-395
+165
+465
 315
-496
-----------------------------------------\nClick on world-draw-items to\ncolorize patches\nLook in the code section for \nthe assigned values
-12
+521
+world-draw-items o\nassign color and \nvalues to the patches\n
+11
 105.0
 1
 
 SWITCH
 20
-330
+385
 130
-363
+418
 show-goal
 show-goal
-0
+1
 1
 -1000
 
 CHOOSER
-10
-475
-140
-520
+20
+500
+150
+545
 p_color
 p_color
 "red" "orange" "green" "blue" "grey" "magenta"
-1
+0
 
 BUTTON
-15
-400
-135
-433
+165
+510
+285
+543
 NIL
 draw-world-items
 T
@@ -388,15 +388,15 @@ NIL
 1
 
 SLIDER
-12
-440
-142
-473
+22
+465
+152
+498
 line-width
 line-width
 0.2
 5
-2.0
+1.2
 0.2
 1
 NIL
@@ -411,7 +411,7 @@ n-walker
 n-walker
 1
 100
-10.0
+15.0
 1
 1
 NIL
@@ -426,17 +426,17 @@ walker-v-angle
 walker-v-angle
 1
 360
-31.0
+29.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-140
-330
-250
-363
+20
+350
+130
+383
 vis-vision
 vis-vision
 1
@@ -445,9 +445,9 @@ vis-vision
 
 SWITCH
 175
-70
+30
 295
-103
+63
 g-streets
 g-streets
 1
@@ -456,9 +456,9 @@ g-streets
 
 SWITCH
 175
-100
+60
 295
-133
+93
 g-orange
 g-orange
 0
@@ -467,9 +467,9 @@ g-orange
 
 TEXTBOX
 5
-290
+295
 320
-308
+313
 --------------------------------------------
 20
 0.0
@@ -477,9 +477,9 @@ TEXTBOX
 
 TEXTBOX
 5
-365
+445
 315
-391
+471
 --------------------------------------------
 20
 0.0
@@ -523,24 +523,79 @@ HORIZONTAL
 
 TEXTBOX
 200
-50
+10
 350
-68
+28
 Szenarien
 12
 0.0
 1
 
 SWITCH
-175
-255
-297
-288
+20
+315
+130
+348
 message
 message
 1
 1
 -1000
+
+CHOOSER
+165
+200
+315
+245
+experiment
+experiment
+"houseOfSantaClaus"
+0
+
+BUTTON
+165
+165
+315
+198
+NIL
+makeExperiment\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SWITCH
+175
+95
+295
+128
+popular
+popular
+0
+1
+-1000
+
+BUTTON
+180
+320
+300
+353
+NIL
+scale-popularity
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -559,15 +614,14 @@ Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, 
 ## Fragestellung und Hypothese (ca. 100 Worte)
 
 
-Die Nutzerinnen solcher sind gleichzeitig die Erschafferinnen solcher Wege. In der vorliegenden Studie soll untersucht werden wie sich die Geometrie von Zielen und die Wahrnehmungsfähigkeit der Akteure auf die räumlöichen Muster und Quantität der Trampfpade auswirkt.
+Die Nutzerinnen solcher sind gleichzeitig die Erschafferinnen solcher Wege. In der vorliegenden Studie soll untersucht werden wie sich die Geometrie von Zielen und die Wahrnehmungsfähigkeit der Akteure auf die räumlichen Muster und die Quantität der Trampfpade auswirkt.
 
 Es werden folgende Hypothesen aufgestellt:
 
-1. Veränderungen der Anordnung von Zielen in einem isommorphen Raum führen zu Veränderungen der Trampelpfadstruktur
+1. Je höher die wahrgenommene  Popularität eines Trampelpades ist desto kürzer sind die Verbindungen zwischen Zielen und in Folge desto geometrischer sind die Muster
 
-2. Verändreungen der Wahrnehmung führen zu Veränderungen der Trampelpfadstruktur
+2. Unüberwindbare Hindernisse werden optimiert umgangen
 
-3. Die enstehenden Muster sind Optimierungen der beiden Bedingungen 
 
 
 ## Methoden und Anwendung (ca. 750 Worte)
