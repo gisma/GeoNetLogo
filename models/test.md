@@ -25,7 +25,9 @@ Es werden folgende Hypothesen aufgestellt:
 
 ## Methoden und Anwendung (ca. 750 Worte)
 
-This is [an example](#1) reference-style link.
+blablabla [<sup>1</sup>](#1) blablabla
+
+footnotes: reference to blablabla <a class="anchor" id="1"></a>
 
 
 ![alt text](http://location/of/image)
