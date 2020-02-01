@@ -27,7 +27,7 @@ Es werden folgende Hypothesen aufgestellt:
 
 blablabla [<sup>1</sup>](#1) blablabla
 
-footnotes: reference to blablabla <a class="anchor" id="1"></a>
+
 
 
 ![alt text](http://location/of/image)
@@ -66,4 +66,4 @@ Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applicati
 
 Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
 
-Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
+ <a class="anchor" id="1"></a> Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
