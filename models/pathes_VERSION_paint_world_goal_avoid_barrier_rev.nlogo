@@ -368,10 +368,10 @@ ticks
 45.0
 
 BUTTON
-10
-45
-75
-78
+320
+30
+385
+63
 NIL
 setup
 NIL
@@ -385,10 +385,10 @@ NIL
 1
 
 BUTTON
-90
-45
-145
-78
+390
+30
+455
+63
 go
 go
 T
@@ -478,7 +478,7 @@ n-walker
 n-walker
 1
 100
-5.0
+1.0
 1
 1
 NIL
@@ -542,20 +542,20 @@ waths
 11
 
 CHOOSER
-170
-210
-310
-255
+320
+140
+460
+185
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
 3
 
 SLIDER
-170
-175
-310
-208
+320
+105
+460
+138
 road-width
 road-width
 1
@@ -578,10 +578,10 @@ message
 -1000
 
 CHOOSER
-10
-210
-155
-255
+320
+190
+460
+235
 selected-experiment
 selected-experiment
 "none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
@@ -591,7 +591,7 @@ TEXTBOX
 10
 10
 465
-26
+28
 --------------------------- Setup and Scenarios-------------------------------
 15
 0.0
@@ -627,9 +627,9 @@ vis-pop
 
 SWITCH
 170
-70
+105
 310
-103
+138
 max-pop
 max-pop
 1
@@ -638,20 +638,20 @@ max-pop
 
 INPUTBOX
 170
-105
+140
 240
-165
+200
 pop-lowlimit
-1.0
+2.0
 1
 0
 Number
 
 INPUTBOX
 240
-105
+140
 310
-165
+200
 roads-pop
 4000.0
 1
@@ -668,6 +668,16 @@ pop
 17
 1
 11
+
+TEXTBOX
+10
+245
+455
+286
+-------------------------------------------------------Output-------------------------------------------
+12
+0.0
+1
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -1410,7 +1420,7 @@ NetLogo 6.0.2
   <experiment name="weg-zu-fuss_klein" repetitions="3" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <timeLimit steps="5000"/>
+    <timeLimit steps="4000"/>
     <metric>waths</metric>
     <metric>pop</metric>
     <enumeratedValueSet variable="show-goal">
@@ -1432,7 +1442,9 @@ NetLogo 6.0.2
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="pop-lowlimit">
-      <value value="1"/>
+      <value value="2"/>
+      <value value="5"/>
+      <value value="15"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="vis-pop">
       <value value="false"/>
