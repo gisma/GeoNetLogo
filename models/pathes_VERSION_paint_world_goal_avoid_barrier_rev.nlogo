@@ -6,88 +6,53 @@ walkers-own [ goal old-color ]
 patches-own [ popularity streets obstacle ]
 
 ; define global (observer) variables
-globals [ roads ]
+globals [ roads scalep visible-routes]
 
 ; setup procedure carried out once
 to setup
   clear-all
+  set scalep false
   ask patches [ set pcolor green
   set obstacle 0
+  set popularity 1
   ]
+  make-experiment
+
   ;ask patches with [pxcor = max-pxcor or pxcor = min-pxcor or pycor = max-pycor or pycor = min-pycor] [set obstacle 1]
   ; if goals are build automatically on the streets
-  if g-streets [
 
-    set g-orange false
-    if preset-roads != "none" [create-roads
- ; create walker and goals on structures (roads)
-    ask  n-of n-walker roads [
-      sprout-walkers 1 [ if g-streets [set goal one-of patches with [streets = 1]]
-      if show-goal [ask goal [set pcolor yellow]]
-        set size 4
-        set color 45
-        set shape "person student"
-      ]
-    ]
-
-    ]
-    if preset-roads = "none" [
-        ask  n-of n-walker patches [
-      sprout-walkers 1 [ set goal one-of patches
-      if show-goal [ask goal [set pcolor yellow]]
-        set size 4
-        set color 45
-        set shape "person student"
-      ]
-    ]
-     if message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
-    ]
-  ]
-
-  ; if goals are orange
-  if g-orange [
-  set g-streets false
-    if preset-roads != "none" [create-roads]
-
-    ask n-of 4 patches with [pcolor = green][set pcolor orange]
-    ask  n-of n-walker patches [sprout-walkers 1 [
-    if g-orange [set goal one-of patches with [pcolor = orange]]
-    set size 4
-    set color 45
-    set shape "person student"]
-    ]
-    if message [user-message (word "Es wurden vier zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
-  ]
-  if not g-orange and not g-streets [
-    if message [user-message (word "Es wurden kein Szenario g-roads oder g-orange ausgwählt.\n Habe nix zu tun")]
+  if selected-experiment = "none" [
+    if message [user-message (word "Es wurde kein Szenario gewählt?!\n Zähle jetzt Schafe...")]
       ask  n-of n-walker patches [sprout-walkers 1 [
         set color white
         set size random 10
         set shape "sheep"
-
       ]
+    ]
+  ]
 
-  ]]
   ; finsihed so reset ticks
   reset-ticks
 end
 
 ; procedure that controls the model run
 to go
-  if g-orange [set g-streets false]
-  if g-streets [set  g-orange false]
+  ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
+  [scale-p]
   move-walkers
   tick
+  if ticks = 4000 [export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")]
+
 end
 
 ; procedure that calculate the attraction of a patch
 to become-more-popular
-  set popularity popularity + 10
+  set popularity popularity + 1
   ; if the increase in popularity takes us above the threshold, become a route
   ; current threshold is 2 times viseited by a turtle
   if pcolor != orange [
     if obstacle != 1 [
-      if popularity >= 100 [ set pcolor gray ]]
+      if popularity >= pop-lowlimit [ set pcolor gray ]]
   ]
 end
 
@@ -95,10 +60,13 @@ end
 to move-walkers
   ask walkers [
     if patch-here = goal [
-      if g-streets [set goal one-of patches with [streets = 1]
+      if selected-experiment = "s-goal" [set goal one-of patches with [streets = 1]
       if show-goal [   ask goal [set pcolor yellow] ]
       ]
-      if g-orange [set goal one-of patches with [pcolor = orange]]
+      if selected-experiment ="o-goal"
+      or selected-experiment ="Y"
+       or selected-experiment ="square"
+       or selected-experiment ="houseOfSantaClaus" [set goal one-of patches with [pcolor = orange]]
       ]
       walk-towards-goal
   ]
@@ -117,12 +85,18 @@ to-report best-way-to [ destination ]
   ; of all the visible route patches (=gray), select the ones
   ; that would take me closer to my destination
 
-  let visible-patches patches in-radius walker-vision-dist with [pcolor != red]
-  if popular = true
-      [set visible-patches patches in-radius walker-vision-dist with-max [popularity]]
-  let visible-routes visible-patches with [ pcolor = gray ]
+  let visible-patches patches in-radius walker-vision-dist
+  ;let visible-routes visible-patches with [popularity > pop-lowlimit]
+  ifelse not max-pop [set visible-routes visible-patches with [
+     popularity >= pop-lowlimit]
+   ;print "1"
+  ]
+   [set visible-routes visible-patches with-max [ popularity]
+
+  ]
+  ;print [popularity] of visible-routes
   let routes-that-take-me-closer visible-routes with [
-    distance destination < [ distance destination - 1 ] of myself
+    distance destination < [ distance destination - 1] of myself
   ]
   ; decision
   ifelse any? routes-that-take-me-closer [
@@ -195,7 +169,9 @@ end
 
 ; #####################################################
 
-; create infrastructure
+; create experiments
+
+; create some static road systems
 to create-roads
    if preset-roads = "triangle" [
    set roads patches with
@@ -209,24 +185,106 @@ to create-roads
    set roads patches with
      [pxcor = pycor  or (-1 * pxcor) =  pycor ]
   ]
-  ask patches [ set pcolor orange
-             set popularity 1000000
-             set streets 1
+    ask roads
+    [ paint-p patches in-radius road-width
+             set pcolor gray
              ]
+
+  set roads patches with [pcolor = gray]
+  ask roads[ set popularity roads-pop
+             set streets 1
+  ]
+  display
+
 end
 
-to makeExperiment
-  if experiment = "houseOfSantaClaus" [
+; create some static and flexible experimental world setups
+to make-experiment
+    if selected-experiment = "Y" [
+    ask patches with [pcolor = orange] [set pcolor  green]
+    ask patches at-points [ [-35 -40] [0 40]  [35 -40]] [ set pcolor orange]
+
+    ask  n-of n-walker patches [sprout-walkers 1 [
+    if selected-experiment ="Y" [set goal one-of patches with [pcolor = orange]]
+      set size 4
+      set color 45
+      set shape "person student"]
+    ]
+
+  ]
+  if selected-experiment = "houseOfSantaClaus" [
     ask patches with [pcolor = orange] [set pcolor  green]
     ask patches at-points [[-35 10] [-35 -40] [0 40]  [35 10] [35 -40]] [ set pcolor orange]
 
+    ask  n-of n-walker patches [sprout-walkers 1 [
+    if selected-experiment ="houseOfSantaClaus" [set goal one-of patches with [pcolor = orange]]
+      set size 4
+      set color 45
+      set shape "person student"]
+    ]
+
   ]
+  if selected-experiment = "square" [
+    ask patches with [pcolor = orange] [set pcolor  green]
+    ask patches at-points [[-35 40] [-35 -40]  [35 40] [35 -40]] [ set pcolor orange]
+        ask  n-of n-walker patches [sprout-walkers 1 [
+    if selected-experiment ="square" [set goal one-of patches with [pcolor = orange]]
+      set size 4
+      set color 45
+      set shape "person student"]
+    ]
+  ]
+
+  if selected-experiment = "s-goal" [
+    if preset-roads != "none" [create-roads
+      ; create walker and goals on structures (roads)
+      ask  n-of n-walker roads [
+        sprout-walkers 1 [ if selected-experiment = "s-goal" [set goal one-of patches with [streets = 1]]
+          if show-goal [ask goal [set pcolor yellow]]
+        set size 4
+        set color 45
+        set shape "person student"
+        ]
+      ]
+    ]
+    if preset-roads = "none" [
+        ask  n-of n-walker patches [
+      sprout-walkers 1 [ set goal one-of patches
+      if show-goal [ask goal [set pcolor yellow]]
+        set size 4
+        set color 45
+        set shape "person student"
+      ]
+    ]
+     if message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
+    ]
+  ]
+  ; if goals are orange
+  if selected-experiment ="o-goal" [
+    if preset-roads != "none" [create-roads]
+    ask n-of 4 patches with [pcolor = green][set pcolor orange]
+    ask  n-of n-walker patches [sprout-walkers 1 [
+    if selected-experiment ="o-goal" [set goal one-of patches with [pcolor = orange]]
+      set size 4
+      set color 45
+      set shape "person student"]
+    ]
+    if message [user-message (word "Es wurden vier zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
+  ]
+
+
 end
 
+;; procedure to colorize the popularity
+;; a linear approach from lowliomit to current max value is applied
+to   scale-p
 
-to   scale-popularity
+  let pmax max [popularity] of patches
+  if pmax < 1 [set pmax pop-lowlimit + pop-lowlimit]
   ask patches with [pcolor != orange and pcolor != green and pcolor != red]
-  [ set pcolor scale-color gray popularity 100 1000]
+  [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
+    set scalep true
+
 end
 
 to paint-p [p]
@@ -241,9 +299,12 @@ to draw-world-items
         if pcolor = red [set obstacle 1
                          set streets 0]
         if pcolor = gray [set obstacle 0
-                         set streets  1]
+                         set streets  1
+                         set popularity roads-pop
+        set popularity roads-pop]
         if pcolor = green [set obstacle 0
-                         set streets  0]
+                         set streets  0
+                         set popularity 1]
       ]
       die
     ]
@@ -256,18 +317,34 @@ end
 ; reporter for analysis
 to-report waths
 
-  report  count patches with [pcolor = gray]
-
+  report  count patches  with [popularity > pop-lowlimit]
 end
 
+to-report pop
+
+let psum sum [popularity] of patches with [popularity > pop-lowlimit]
+let pcount count patches with [popularity > pop-lowlimit]
+report round(psum / pcount)
+end
+
+to help
+ clear-all
+ import-drawing "interface.png"
+if user-yes-or-no? "OK?"
+  [ clear-all ]
+
+
+
+
+end
 ; Copyright 2015 Uri Wilensky.
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-320
-15
-833
-529
+465
+10
+978
+524
 -1
 -1
 5.0
@@ -292,9 +369,9 @@ ticks
 
 BUTTON
 10
-30
+45
 75
-63
+78
 NIL
 setup
 NIL
@@ -309,9 +386,9 @@ NIL
 
 BUTTON
 90
-30
+45
 145
-63
+78
 go
 go
 T
@@ -326,34 +403,24 @@ NIL
 
 SLIDER
 10
-215
+140
 155
-248
+173
 walker-vision-dist
 walker-vision-dist
 1
 200
-18.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
-TEXTBOX
-165
-465
-315
-521
-world-draw-items o\nassign color and \nvalues to the patches\n
-11
-105.0
-1
-
 SWITCH
 20
-385
+405
 130
-418
+438
 show-goal
 show-goal
 1
@@ -367,7 +434,7 @@ CHOOSER
 545
 p_color
 p_color
-"red" "orange" "green" "blue" "grey" "magenta"
+"red" "orange" "grey" "green"
 0
 
 BUTTON
@@ -404,14 +471,14 @@ HORIZONTAL
 
 SLIDER
 10
-145
+105
 155
-178
+138
 n-walker
 n-walker
 1
 100
-15.0
+5.0
 1
 1
 NIL
@@ -419,14 +486,14 @@ HORIZONTAL
 
 SLIDER
 10
-180
+175
 155
-213
+208
 walker-v-angle
 walker-v-angle
 1
 360
-29.0
+1.0
 1
 1
 NIL
@@ -434,43 +501,21 @@ HORIZONTAL
 
 SWITCH
 20
-350
+370
 130
-383
+403
 vis-vision
 vis-vision
 1
-1
--1000
-
-SWITCH
-175
-30
-295
-63
-g-streets
-g-streets
-1
-1
--1000
-
-SWITCH
-175
-60
-295
-93
-g-orange
-g-orange
-0
 1
 -1000
 
 TEXTBOX
-0
-300
-315
-316
---------------------------Visualisation------------------
+5
+345
+460
+381
+-----------------------------------------Visualisation-------------------------------
 15
 0.0
 1
@@ -478,39 +523,39 @@ TEXTBOX
 TEXTBOX
 5
 445
-315
+460
 471
-------------------------------------DRAW--------------------------------
+-----------------------------------------------------------DRAW--------------------------------------------
 12
 0.0
 1
 
 MONITOR
 15
-255
-152
-300
-No of gray patches
+260
+160
+305
+patches pop > lowlimit
 waths
 17
 1
 11
 
 CHOOSER
-10
-100
-155
-145
+170
+210
+310
+255
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
 3
 
 SLIDER
-10
-70
-155
-103
+170
+175
+310
+208
 road-width
 road-width
 1
@@ -521,21 +566,11 @@ road-width
 NIL
 HORIZONTAL
 
-TEXTBOX
-5
-10
-395
-28
-------------- Setup and Scenarios-----------------
-15
-0.0
-1
-
 SWITCH
-20
-315
-130
-348
+135
+405
+245
+438
 message
 message
 1
@@ -543,22 +578,32 @@ message
 -1000
 
 CHOOSER
-165
-200
-315
-245
-experiment
-experiment
-"houseOfSantaClaus"
-0
+10
+210
+155
+255
+selected-experiment
+selected-experiment
+"none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
+1
+
+TEXTBOX
+10
+10
+465
+26
+--------------------------- Setup and Scenarios-------------------------------
+15
+0.0
+1
 
 BUTTON
-165
-165
-315
-198
+170
+470
+285
+503
 NIL
-makeExperiment\n
+help
 NIL
 1
 T
@@ -570,32 +615,59 @@ NIL
 1
 
 SWITCH
-175
-95
-295
-128
-popular
-popular
-0
+135
+370
+245
+403
+vis-pop
+vis-pop
+1
 1
 -1000
 
-BUTTON
-180
-320
-300
-353
-NIL
-scale-popularity
-T
+SWITCH
+170
+70
+310
+103
+max-pop
+max-pop
 1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
 1
+-1000
+
+INPUTBOX
+170
+105
+240
+165
+pop-lowlimit
+1.0
+1
+0
+Number
+
+INPUTBOX
+240
+105
+310
+165
+roads-pop
+4000.0
+1
+0
+Number
+
+MONITOR
+15
+305
+160
+350
+average popularity
+pop
+17
+1
+11
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -613,31 +685,57 @@ Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, 
 
 ## Fragestellung und Hypothese (ca. 100 Worte)
 
-
-Die Nutzerinnen solcher sind gleichzeitig die Erschafferinnen solcher Wege. In der vorliegenden Studie soll untersucht werden wie sich die Geometrie von Zielen und die Wahrnehmungsfähigkeit der Akteure auf die räumlichen Muster und die Quantität der Trampfpade auswirkt.
+Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat.
 
 Es werden folgende Hypothesen aufgestellt:
 
-1. Je höher die wahrgenommene  Popularität eines Trampelpades ist desto kürzer sind die Verbindungen zwischen Zielen und in Folge desto geometrischer sind die Muster
+1. Je höher die wahrgenommene Popularität eines Trampelpades ist desto (1) kürzer sind die Verbindungen zwischen Zielen und (2) desto mehr einzelne Wege enstehen.
 
-2. Unüberwindbare Hindernisse werden optimiert umgangen
-
-
+2. Je größer die Wahrnehmung der Akteure desto desto (1) kürzer sind die Verbindungen zwischen Zielen und (2) desto mehr einzelne Wege enstehen.
 
 ## Methoden und Anwendung (ca. 750 Worte)
 
-Wilensky (1999)
-Teahan (2010b), 
-Teahan (2010a)
+## Modellvorstellung
+
+Die grundlegende  Beobachtung dass Trampelpfade entlang gemeinsam zurückgelegter Routen entstehen kann durch die Neigung begründet werden Wege zwischen Ausgangspunkt und Ziel zu optimieren. Es kann zudem beobachtet werden dass weitere Akteure dazu neigen sobald solche Spuren sichtbar sind diese verstärkt zu benutzen was wierderum die Sichtbarkeit erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden Trampelpfade die spezifiischen Regeln folgen.
+
+Jeder Akteur:
+
+1. hat ein bekanntes Ziel
+2. versucht dieses Zeil möglichst auf direktem Weg zu erreichen  
+3. schätzt ein ob eine erkennbare Trittspur a) in dieser Richtung b) für ihn erkennbar erreichbar ist
+4. entscheidet nach der optimalen Distanz ob er den direkten Weg nimmt oder die Trittspur als Zwischenziel anläuft
+
+Jede Raumeinheit hat einen definierten Zustand bezüglich:
+
+1. ihreres Nutzungstatus (Grünland, Trittspur, Ziel)
+2. Die Trittspur wird bei jedem Betreten um einen Punkt aufgewertet um aus dem Grünland zu Trittspurzu wechseln,
+
+## Einstellungen der Sensitivitätsstudie
+Die Hypothesenüberprüfung soll mit Hilfe einer Sensitivitätsstudie erfolgen. Hierzu werden reproduzierbare Raumbedingnen (sieh Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseisntellungen in definierter Anzahl wiederholt.
+### Zieleverteilung im Raum 
+Die Untersuchung wird mittels einer reproduzierbaren Anordnung von Zielen durchgeführt. Insbesondere werden ein asymetrisches Fünfeck (Haus vom Nikolaus), ein Quadrat und ein Dreieck in eine isomorphe Fläche positioniert (siehe Abbildung 1).  
+
+![Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck.](images/experiments_spatial_setup.png)
+Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck
+
+### Die Parametrisierung der Akteure 
+* Die Akteure werden in 10 fach wiederholten jeweils in einer Anazahl von 5, 10, 15 zufällig in Modellwelt eingesetzt und streben den jeweils zufällig zugelosten Zielpunkten zu. Bei erreichen erfolgt eine zufällige Neulosung. 
+* Die Sichtweite der Akteure wird von von über 1,5, 10, 20, 30, 50 Patches im Radius iteriert. 
+* Der Schwellwert eines attraktiven Trampelpad patches wird von 1 bis 25 um jeweils 1 erhöht 
+
+Zur Umsetzung wird das Behavoiur Space Werkzeug der NetLogo PÜrogrammierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"weg-zu-fuss"_ startet insgesamt 2400 Modelläufe.
 
 
 ## Ergebnisse (ca. 750 Worte)
 
 ## Diskussion
 
-
+###
 
 ## Referenzen (wie verwendet)
+
+
 Feistel,R. & Ebeling, W. (1989), Evolution of Complex Systems. Self-Organization, Entropy and Development. Kluwer, Dordrecht,1989.
 
 Gilbert N. & S. Bankes (2002), Platforms and methods for agent-based modeling. Proc. Natl. Acad.Sci. USA 99. Suppl 3.
@@ -656,7 +754,8 @@ Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. URL: htt
 
 Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7. 
 
-Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+<b id="f1">1</b> Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
+
 
 Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
 
@@ -1246,6 +1345,124 @@ NetLogo 6.0.2
     </enumeratedValueSet>
     <enumeratedValueSet variable="triangle-roads">
       <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="weg-zu-fuss" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="5000"/>
+    <metric>waths</metric>
+    <metric>pop</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="5"/>
+      <value value="15"/>
+      <value value="30"/>
+      <value value="45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="4000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+      <value value="&quot;square&quot;"/>
+      <value value="&quot;houseOfSantaClaus&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="weg-zu-fuss_klein" repetitions="3" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="5000"/>
+    <metric>waths</metric>
+    <metric>pop</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="5"/>
+      <value value="15"/>
+      <value value="45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="4000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+      <value value="&quot;square&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="1"/>
+      <value value="5"/>
+      <value value="15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
