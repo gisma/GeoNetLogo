@@ -6,7 +6,12 @@ walkers-own [ goal ]
 patches-own [ popularity streets obstacle ]
 
 ; define global (observer) variables
-globals [ roads  visible-routes ]
+globals [
+  roads
+  visible-routes
+  gini-index-reserve
+  lorenz-points
+]
 
 ; setup procedure carried out once
 to setup
@@ -29,6 +34,7 @@ to setup
   ]
 
   ; finsihed so reset ticks
+  update-lorenz-and-gini
   reset-ticks
 end
 
@@ -38,7 +44,9 @@ to go
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
   move-walkers
+  update-lorenz-and-gini
   tick
+
   if ticks = 4000 [export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")]
 
 end
@@ -195,8 +203,10 @@ end
 ; create some static and flexible experimental world setups
 to make-experiment
     if selected-experiment = "Y" [
+    ;https://www.triangle-calculator.com/de/?what=vc&a=-40&a1=-40&3dd=3D&a2=0&b=0&b1=29.2825&b2=0&c=40&c1=-40&c2=0&submit=Berechnen&3d=0
+    ;Schwerpunkt: SC[0; -17]
     ask patches with [pcolor = orange] [set pcolor  green]
-    ask patches at-points [ [-35 -40] [0 40]  [35 -40]] [ set pcolor orange]
+    ask patches at-points [ [-40 -40] [0 29.2825]  [40 -40]] [ set pcolor orange]
 
     ask  n-of n-walker patches [sprout-walkers 1 [
     if selected-experiment ="Y" [set goal one-of patches with [pcolor = orange]]
@@ -316,17 +326,57 @@ to-report trampling
   report  count patches  with [popularity > pop-lowlimit]
 end
 
-to-report pop
+to-report popularity-minimum
+  report  count patches  with [popularity = pop-lowlimit  ]
+end
+
+to-report popularity-average
 let psum sum [popularity] of patches with [popularity > pop-lowlimit]
 let pcount count patches with [popularity > pop-lowlimit]
-report round(psum / pcount)
+report psum / pcount
 end
+
+to-report popularity-maximum
+let psum sum [popularity] of patches with-max [popularity]
+let pcount count patches with-max [popularity]
+  report psum / pcount
+end
+
+to-report gini-05
+  report  gini-index-reserve / trampling
+end
+
 
 to help
  clear-all
  import-drawing "interface.png"
 if user-yes-or-no? "OK?"
   [ clear-all ]
+end
+
+;; this procedure recomputes the value of gini-index-reserve
+;; and the points in lorenz-points for the Lorenz and Gini-Index plots
+to update-lorenz-and-gini
+  let sorted-popularity sort [popularity] of patches with [popularity >  pop-lowlimit]
+  let total-popularity sum sorted-popularity
+  let popularity-sum-so-far 0
+  let index 0
+  set gini-index-reserve 0
+  set lorenz-points []
+
+  ;; now actually plot the Lorenz curve -- along the way, we also
+  ;; calculate the Gini index.
+  ;; (see the Info tab for a description of the curve and measure)
+  repeat count patches with [popularity >  pop-lowlimit] [
+    set popularity-sum-so-far (popularity-sum-so-far + item index sorted-popularity)
+    set lorenz-points lput ((popularity-sum-so-far / total-popularity) * 100) lorenz-points
+    ;print lorenz-points
+    set index (index + 1)
+    set gini-index-reserve
+      gini-index-reserve +
+      (index / count patches with [popularity >  pop-lowlimit]) -
+      (popularity-sum-so-far / total-popularity)
+  ]
 end
 ; Copyright 2015 Uri Wilensky.
 ; See Info tab for full copyright and license.
@@ -345,8 +395,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -50
 50
@@ -401,17 +451,17 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-5.0
+50.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-20
-405
-130
-438
+5
+280
+115
+313
 show-goal
 show-goal
 1
@@ -469,7 +519,7 @@ n-walker
 n-walker
 1
 100
-5.0
+10.0
 1
 1
 NIL
@@ -491,10 +541,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-20
-370
-130
-403
+230
+280
+340
+313
 vis-vision
 vis-vision
 1
@@ -503,9 +553,9 @@ vis-vision
 
 TEXTBOX
 5
-345
+255
 460
-381
+291
 -----------------------------------------Visualisation-------------------------------
 15
 0.0
@@ -522,15 +572,15 @@ TEXTBOX
 1
 
 MONITOR
-15
-260
-160
-305
-patches pop > lowlimit
+30
+640
+152
+681
+Zahl l pop > lowlimit
 trampling
-17
+0
 1
-11
+10
 
 CHOOSER
 320
@@ -558,10 +608,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-135
-405
-245
-438
+120
+280
+230
+313
 message
 message
 1
@@ -576,7 +626,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
-3
+1
 
 TEXTBOX
 10
@@ -606,13 +656,13 @@ NIL
 1
 
 SWITCH
-135
-370
-245
-403
+345
+280
+455
+313
 vis-pop
 vis-pop
-1
+0
 1
 -1000
 
@@ -623,7 +673,7 @@ SWITCH
 138
 max-pop
 max-pop
-1
+0
 1
 -1000
 
@@ -633,7 +683,7 @@ INPUTBOX
 240
 200
 pop-lowlimit
-1.0
+3.0
 1
 0
 Number
@@ -644,31 +694,112 @@ INPUTBOX
 310
 200
 roads-pop
-4000.0
+2000.0
 1
 0
 Number
 
 MONITOR
-15
-305
-160
-350
+30
+590
+147
+631
 average popularity
-pop
+popularity-average
+0
+1
+10
+
+TEXTBOX
+30
+555
+965
+596
+----------------------------------------------------------------------------------------------------------------------Output--------------------------------------------------------------------------------------------------------
+12
+0.0
+1
+
+PLOT
+765
+580
+965
+700
+Lorenz Kurve
+patches %
+popularity %
+0.0
+100.0
+0.0
+100.0
+false
+false
+"" ""
+PENS
+"Lorenz " 1.0 0 -955883 true "" "plot-pen-reset\nif ticks > 10[\nlet pop-p count patches with [popularity >  pop-lowlimit]\nif pop-p < 1 [set pop-p 1\n]\nset-plot-pen-interval 100 / pop-p\nplot 0\nforeach lorenz-points plot]"
+"Gleichverteilung" 100.0 0 -16777216 true "plot 0\nplot 100" ""
+
+PLOT
+585
+580
+760
+700
+Gini vs Zeit
+Time
+Gini
+0.0
+400.0
+0.0
+0.5
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -14070903 true "" "if ticks > 100[\nplot gini-05\n]"
+
+MONITOR
+155
+590
+252
+631
+max-popularity
+popularity-maximum
+0
+1
+10
+
+MONITOR
+160
+640
+247
+681
+Zahl min pop
+popularity-minimum
+0
+1
+10
+
+MONITOR
+310
+620
+440
+665
+NIL
+lorenz-points
 17
 1
 11
 
-TEXTBOX
-10
-245
+MONITOR
 455
-286
--------------------------------------------------------Output-------------------------------------------
-12
-0.0
+620
+515
+665
+NIL
+gini-index-reserve / trampling
+17
 1
+11
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -1387,6 +1518,7 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="walker-vision-dist">
       <value value="5"/>
       <value value="15"/>
+      <value value="30"/>
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="line-width">
@@ -1423,10 +1555,72 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
       <value value="&quot;square&quot;"/>
+      <value value="&quot;houseOfSantaClaus&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="5"/>
       <value value="15"/>
+      <value value="30"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="triangle" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="4000"/>
+    <metric>trampling</metric>
+    <metric>popularity-minimum</metric>
+    <metric>popularity-maximum</metric>
+    <metric>popularity-average</metric>
+    <metric>gini-05</metric>
+    <metric>lorenz-points</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="1"/>
+      <value value="11"/>
+      <value value="31"/>
+      <value value="51"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="10"/>
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="message">
