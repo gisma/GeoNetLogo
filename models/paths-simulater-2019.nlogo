@@ -361,7 +361,7 @@ end
 
 to help
  clear-all
-  import-drawing "help.png"
+  import-drawing "images/help.png"
 if user-yes-or-no? "OK?"
   [ clear-all ]
 end
@@ -402,10 +402,10 @@ end
 GRAPHICS-WINDOW
 465
 10
-978
-524
--1
--1
+980
+546
+50
+50
 5.0
 1
 12
@@ -469,7 +469,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-1.0
+1
 1
 1
 NIL
@@ -537,7 +537,7 @@ n-walker
 n-walker
 1
 100
-10.0
+10
 1
 1
 NIL
@@ -552,7 +552,7 @@ walker-v-angle
 walker-v-angle
 1
 360
-1.0
+1
 1
 1
 NIL
@@ -619,7 +619,7 @@ road-width
 road-width
 1
 6
-1.0
+1
 1
 1
 NIL
@@ -701,7 +701,7 @@ INPUTBOX
 240
 200
 pop-lowlimit
-1.0
+1
 1
 0
 Number
@@ -712,7 +712,7 @@ INPUTBOX
 310
 200
 roads-pop
-2000.0
+2000
 1
 0
 Number
@@ -811,7 +811,7 @@ Count
 100.0
 true
 false
-"\n" "ifelse popularity-maximum > pop-lowlimit\n[set-plot-x-range pop-lowlimit popularity-maximum]\n[set-plot-x-range pop-lowlimit (pop-lowlimit + 1)]\nset-histogram-num-bars 10"
+"" "ifelse popularity-maximum > pop-lowlimit\n[set-plot-x-range pop-lowlimit popularity-maximum]\n[set-plot-x-range pop-lowlimit (pop-lowlimit + 1)]\nset-histogram-num-bars 10"
 PENS
 "default" 50.0 1 -16777216 true "" "histogram spop"
 
@@ -822,14 +822,14 @@ Rieke Ammoneit und Chris Reudenbach 2020
 
 ## Einleitung
 
-Alle Akteure, die räumlich interagieren, müsssen diese Räume überwinden und in folge erschließen. Geschieht dies regelmäßig und häufig entstehen Wege, die diesen Strukturen zur Nutzung des erdgebundenen Raumes zur Verfügung stellen. Oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917]. 
+Alle Akteure, die räumlich interagieren, müsssen diese Räume überwinden und in folge erschließen. Geschieht dies regelmäßig und häufig entstehen Wege, die diesen Strukturen zur Nutzung des erdgebundenen Raumes zur Verfügung stellen. Oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917].
 
-Folgt man Helbig [5] gibt es ein breites Interesse über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung ist theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet [z.B. 3]. Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs mit einem gegebnen Raum und seiner Bewegungsabsichten. 
-Im Vorliegenden Falle soll die spontane Entstehung von Trampelpfaden in einem einfachen geometrischen Raumsetting untersucht werden. 
+Folgt man Helbig [5] gibt es ein breites Interesse über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung ist theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet [z.B. 3]. Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs mit einem gegebnen Raum und seiner Bewegungsabsichten.
+Im Vorliegenden Falle soll die spontane Entstehung von Trampelpfaden in einem einfachen geometrischen Raumsetting untersucht werden.
 
 Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999].
 
-Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat. 
+Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat.
 
 ## Fragestellung und Hypothese
 Die grundlegende  Beobachtung dass Trampelpfade entlang gemeinsam zurückgelegter Routen entstehen kann durch die Neigung begründet werden Wege zwischen Ausgangspunkt und Ziel zu optimieren. Es kann zudem beobachtet werden dass weitere Akteure dazu neigen sobald solche Spuren sichtbar sind diese verstärkt zu benutzen was wierderum die Sichtbarkeit erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden Trampelpfade die spezifiischen Regeln folgen.
@@ -840,92 +840,114 @@ Es werden folgende Hypothesen aufgestellt:
 
 2. Je weitreichender die Wahrnehmung der Akteure ist desto desto (1) stärker konvergieren Wege zu gemeinsam genutzten Pfaden mit (2) insgesamt mehr Nebenpfaden und (3) mehr Trampelpfadpatches als unter (1)
 
-## Methoden und Anwendung 
+## Methoden
 
-###  Wortmodell
-Das aus den Beobachtungen abgeleitetete Modellwird folgendermassen formuliert: 
-
+Zur Abstraktion und Modellbildung wird nach Bossel (2004) aus den Beobachtungen und gemäß der Fragestellung folgendes **Wortmodell** aufgestellt:
 
     "Bei zufällig gegebenen festen Zielen in einem isomorphen Raum wird auf einer
-     approximativ  linearen direkten Verbindung zwischen disen Zeilen ein Trampelpfad
-     durch Benutzung enstehen. Dieser direkte Weg wird modifiziert durch die Neigung der
-     Akteure bereits existierende Wegstücke auf dem Weg zum Ziel zu nutzen. Je mehr
-     dieser Wegstücke verfügbar sind und eingesehen werden können desto stäker wird eine
-     Veränderung von streng lineraen zu kurvigen und mehrspurigen Wegstrukturen
-     stattfinden"
+     approximativ linearen (direkten) Verbindung zwischen diesen Zielen durch wiederholte
+     Benutzung der gleichen Trittpatches ein Trampelpfad enstehen. Dieser direkte Weg
+     wird modifiziert falls die Neigung der Akteure bereits existierende Wegstücke auf
+     Weg zum Ziel zu nutzen zunimmt. Je mehr dieser Wegstücke verfügbar sind und
+     eingesehen werden können, desto stäker wird eine Veränderung der geraden Wege zu
+     eher bogenförmig oder gekrümmten Wegen stattfinden"
 
-### Regeln
+### Regeln aus dem Wortmodell
+Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
 **Akteure (walkers)**
 
-* haben immer ein bekanntes Ziel
-* versuchen dieses Zeil auf direktem Weg zu erreichen  
-* identifizieren auf dem Weg ob eine erkennbare Trittspur Richtung  auf das Ziel erkennbar ist
-* entscheiden dann aufgrund des Distanzvorteils der direkte Weg oder die Trittspur als Richtung gewählt wird
+agieren nach den folgenden Regeln:
 
-**Raumeinheiten (patches) haben die folgenden Eigenschaften**
+* haben immer ein bekanntes Ziel
+* versuchen dieses Ziel auf direktem Weg zu erreichen
+* identifizieren je Schritt ob eine Trittspur in Richtung zum Ziel erkennbar ist
+* falls so, wählen sie die richtung auf die Trittspur falls damit der Weg zum Ziel verkürzt wird
+
+**Raumeinheiten (patches)**
+
+haben die folgenden Eigenschaften:
 
 * Nutzung (Grünland [grün], Trittspur [grau je nach popularity], Ziel [orange])
 
 **Interaktion**
 
-* Die Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt (popularity) aufgewertet. Ab einem definierten Schwellwert wird aus Grünland eine Trittspur
+* Die Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt (popularity) aufgewertet. Ab einem definierten Schwellwert der popularity wird aus Grünland eine Trittspur.
 
-## Rahmenbedingungen des Modelllaufs
+### Rahmenbedingungen des Modelllaufs
 
-Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der für die Hypothen relevanten PArameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen und in definierter Anzahl wiederholt.
+Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen und in definierter Anzahl wiederholt.
 
-### Zieleverteilung im Raum 
-Es werden die Scheitelpunkte eines asymetrischen Fünfeck (Haus vom Nikolaus), eines Quadrats und eine leicht rotierten gleichseitigen Dreiecks auf einer isomorphen Fläche positioniert (siehe Abbildung 1).  
+### Ziele und  Raum
+Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines Quadrats und eines leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) auf einer isomorphen Fläche (grün) positioniert (siehe Abbildung 1).
 
-![Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck.](images/experiments_spatial_setup.png)
-Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck
+![Räumliche Positionen der Experimente A Dreieck, B Quadrat.](images/experiments_spatial_setup.png)
+Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne Flächen sind Grünland, Orange Punkte die Ziele. Trittspuren und Agenten sind noch nicht vorhanden.
 
-### Die Parametrisierung der Akteure 
+### Die Parametrisierung der Simulationen
 
-* Die Akteure werden in 10-fach wiederholten jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzt und streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles. 
+* Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles.
 
-* Die Sichtweite der Akteure wird von von über 1, 25, 50 Patches im Radius iteriert. 
-* Der Schwellwert eines attraktiven Trampelpad patches wird von 1 bis 5 um jeweils 5 erhöht 
+Für jede 5-fache Wiederholung gilt:
 
-Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry_run"_ startet insgesamt 2400 Modelläufe.
+* Die Sichtweite der Akteure wird über 1, 25, 50 Patches im Radius iteriert.
+* Der Schwellwert eines attraktiven Trampelpad Patches wird mit 1 und 5 initialisiert.
+
+Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry-run"_ startet 60 Modelläufe.
+
+### Netlogo Modell paths-simulater-2019
+
+Das _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort verwendete zentrale Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert.
+
+Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) implementiert und verwendet.
 
 
 ## Ergebnisse (ca. 750 Worte)
 
+Die Modelläufe (jeweils nach 2500 Zeitschritten) sind in Abbildung 2 als Panel dargestellt.
+
+In einer ersten visuellen Inspektion zeigen sich folgende Muster:
+
+<table>
+    <tr>
+        <td><b> typ </td>
+        <td><b>ueber 1 </td>
+        <td><b>uber2</b></td>
+    </tr>
+    <tr>
+        <td>max popularity true</td>
+         <td>oh</td>
+         <td>je</td>
+    </tr>
+    <tr>
+        <td>max popularity false</td>
+         <td>oh</td>
+         <td>je</td>
+    </tr>
+
+</table>
+
+
+
 ## Diskussion
 
-###
 
 ## Referenzen (wie verwendet)
-
-
+Bossel, H, (2004), Systeme, Dynamik, Simulation : Modellbildung, Analyse und Simulation komplexer Systeme. Norderstedt, Books on Demand GmbH.
 Feistel,R. & Ebeling, W. (1989), Evolution of Complex Systems. Self-Organization, Entropy and Development. Kluwer, Dordrecht,1989.
-
 Gilbert N. & S. Bankes (2002), Platforms and methods for agent-based modeling. Proc. Natl. Acad.Sci. USA 99. Suppl 3.
-
+Grider, R. and  U. Wilensky, U. (2015). NetLogo Paths model. http://ccl.northwestern.edu/netlogo/models/Paths. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 Helbing D., Keltsch & P. Molnar (1997), Modelling the evolution of human trail systems Nature  Vol. 388.
-
 Henderson L.F. /1974), On the fluid mechanics of human crowd motion, Transportation Research, Volume 8, Issue 6, 1974, Pages 509-515, DOI: https://doi.org/10.1016/0041-1647(74)90027-6.
-
 Machado A.: "Campos de Castilla", 1917 zit nach URL: http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm, Zugriff: 28.01.2020
-
 Molnar P. (1995), Modellierung und Simulation der Dynamik von Fußgängerströmen (Diss.), URL: http://www.cis.cau.edu/~pmolnar/dissertation/dissertation.html (Stand: 21.August 2006
-
 Schaber C. (2006), Space Syntax als Werkzeug zur Analyse des Stadtraums und menschlicher Fortbewegung im öffentlichen Raum unter besonderer Berücksichtigung schienengebundener Verkehrssysteme.   Das Beispiel des Leipziger City-Tunnels. Masterarbeit. URL: https://e-pub.uni-weimar.de/opus4/frontdoor/deliver/index/docId/2112/file/SCHABER+2007+-+Space+Syntax+als+Werkzeug_pdfa.pdf
-
 Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. URL: https://books.google.de/books?id=lJzgxgEACAAJ
-
-Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7. 
-
-<b id="f1">1</b> Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
-
-
 Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
-
 Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
-
 Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, URL: http://jasss.soc.surrey.ac.uk/17/3/11.html DOI: 10.18564/jasss.2503
+Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
+Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
 @#$#@#$#@
 default
 true
@@ -1480,13 +1502,14 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
+
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="geometry_run" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="geometry-run" repetitions="5" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
@@ -1560,6 +1583,7 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
+
 @#$#@#$#@
 1
 @#$#@#$#@
