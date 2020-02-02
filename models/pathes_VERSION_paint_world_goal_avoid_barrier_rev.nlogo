@@ -2,25 +2,22 @@
 breed [ walkers walker ]
 
 ; define turtles and patches specific variables
-walkers-own [ goal old-color ]
+walkers-own [ goal ]
 patches-own [ popularity streets obstacle ]
 
 ; define global (observer) variables
-globals [ roads scalep visible-routes]
+globals [ roads  visible-routes ]
 
 ; setup procedure carried out once
 to setup
   clear-all
-  set scalep false
   ask patches [ set pcolor green
   set obstacle 0
-  set popularity 1
+  set popularity 0
   ]
   make-experiment
 
-  ;ask patches with [pxcor = max-pxcor or pxcor = min-pxcor or pycor = max-pycor or pycor = min-pycor] [set obstacle 1]
-  ; if goals are build automatically on the streets
-
+ ; if no experiment is choosen stop
   if selected-experiment = "none" [
     if message [user-message (word "Es wurde kein Szenario gewählt?!\n Zähle jetzt Schafe...")]
       ask  n-of n-walker patches [sprout-walkers 1 [
@@ -36,6 +33,7 @@ to setup
 end
 
 ; procedure that controls the model run
+; adapted from the original paths model
 to go
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
@@ -46,10 +44,11 @@ to go
 end
 
 ; procedure that calculate the attraction of a patch
+; adapted from the original paths model
 to become-more-popular
   set popularity popularity + 1
   ; if the increase in popularity takes us above the threshold, become a route
-  ; current threshold is 2 times viseited by a turtle
+  ; current threshold is 1 times by a turtle
   if pcolor != orange [
     if obstacle != 1 [
       if popularity >= pop-lowlimit [ set pcolor gray ]]
@@ -57,6 +56,7 @@ to become-more-popular
 end
 
 ; procedure to control the movement of walkers
+; adapted from the original paths model
 to move-walkers
   ask walkers [
     if patch-here = goal [
@@ -74,6 +74,7 @@ end
 
 ; procedure to control the popularity of patches,
 ; the destination of the next walkes step and the avoidance of obstacles
+; adapted from the original paths model
 to walk-towards-goal
     ask patch-here [ become-more-popular ]
  face best-way-to goal
@@ -81,6 +82,7 @@ to walk-towards-goal
 end
 
 ; procedure that calculate and perfom the decison  of the best direction
+; adapted from the original paths model
 to-report best-way-to [ destination ]
   ; of all the visible route patches (=gray), select the ones
   ; that would take me closer to my destination
@@ -106,13 +108,6 @@ to-report best-way-to [ destination ]
     ; if there are no nearby routes to my destination
     report destination
   ]
-end
-
-to avoid
-
-while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 1] > 0]
- [ rt 12.5 ]
-
 end
 
 ; this procedure adapts the forward looking example of obstacles avoidance as presented by
@@ -168,7 +163,6 @@ while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 
 end
 
 ; #####################################################
-
 ; create experiments
 
 ; create some static road systems
@@ -278,14 +272,17 @@ end
 ;; procedure to colorize the popularity
 ;; a linear approach from lowliomit to current max value is applied
 to   scale-p
-
+  if ticks > 10 [
   let pmax max [popularity] of patches
-  if pmax < 1 [set pmax pop-lowlimit + pop-lowlimit]
+  ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
+  ;print pmax
   ask patches with [pcolor != orange and pcolor != green and pcolor != red]
   [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
-    set scalep true
-
+  ]
 end
+
+
+;#########################################################
 
 to paint-p [p]
   ask p [ set pcolor gray]
@@ -304,7 +301,7 @@ to draw-world-items
         set popularity roads-pop]
         if pcolor = green [set obstacle 0
                          set streets  0
-                         set popularity 1]
+                         set popularity 0]
       ]
       die
     ]
@@ -315,13 +312,11 @@ end
 
 ;#########################################################
 ; reporter for analysis
-to-report waths
-
+to-report trampling
   report  count patches  with [popularity > pop-lowlimit]
 end
 
 to-report pop
-
 let psum sum [popularity] of patches with [popularity > pop-lowlimit]
 let pcount count patches with [popularity > pop-lowlimit]
 report round(psum / pcount)
@@ -332,10 +327,6 @@ to help
  import-drawing "interface.png"
 if user-yes-or-no? "OK?"
   [ clear-all ]
-
-
-
-
 end
 ; Copyright 2015 Uri Wilensky.
 ; See Info tab for full copyright and license.
@@ -354,8 +345,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 -50
 50
@@ -478,7 +469,7 @@ n-walker
 n-walker
 1
 100
-1.0
+5.0
 1
 1
 NIL
@@ -536,7 +527,7 @@ MONITOR
 160
 305
 patches pop > lowlimit
-waths
+trampling
 17
 1
 11
@@ -585,7 +576,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
-1
+3
 
 TEXTBOX
 10
@@ -642,7 +633,7 @@ INPUTBOX
 240
 200
 pop-lowlimit
-2.0
+1.0
 1
 0
 Number
@@ -693,7 +684,7 @@ Im Vorliegenden Falle soll die spontane Entstehung von Trampelpfaden in einem ei
 
 Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999] 
 
-## Fragestellung und Hypothese (ca. 100 Worte)
+## Fragestellung und Hypothese
 
 Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat.
 
@@ -703,7 +694,7 @@ Es werden folgende Hypothesen aufgestellt:
 
 2. Je größer die Wahrnehmung der Akteure desto desto (1) kürzer sind die Verbindungen zwischen Zielen und (2) desto mehr einzelne Wege enstehen.
 
-## Methoden und Anwendung (ca. 750 Worte)
+## Methoden und Anwendung 
 
 ## Modellvorstellung
 
@@ -722,7 +713,8 @@ Jede Raumeinheit hat einen definierten Zustand bezüglich:
 2. Die Trittspur wird bei jedem Betreten um einen Punkt aufgewertet um aus dem Grünland zu Trittspurzu wechseln,
 
 ## Einstellungen der Sensitivitätsstudie
-Die Hypothesenüberprüfung soll mit Hilfe einer Sensitivitätsstudie erfolgen. Hierzu werden reproduzierbare Raumbedingnen (sieh Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseisntellungen in definierter Anzahl wiederholt.
+
+Die Hypothesenüberprüfung soll mit Hilfe einer Parameterschätzung und der Auswertung geeigneter Messgrößen erfolgen (Thiele et al. 2014).  erfolgen. Hierzu werden reproduzierbare Raumbedingnen (sieh Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseisntellungen in definierter Anzahl wiederholt.
 ### Zieleverteilung im Raum 
 Die Untersuchung wird mittels einer reproduzierbaren Anordnung von Zielen durchgeführt. Insbesondere werden ein asymetrisches Fünfeck (Haus vom Nikolaus), ein Quadrat und ein Dreieck in eine isomorphe Fläche positioniert (siehe Abbildung 1).  
 
@@ -770,6 +762,8 @@ Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applicati
 Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
 
 Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
+
+Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, URL: http://jasss.soc.surrey.ac.uk/17/3/11.html DOI: 10.18564/jasss.2503
 @#$#@#$#@
 default
 true
@@ -1318,45 +1312,6 @@ NetLogo 6.0.2
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="1000"/>
-    <metric>waths</metric>
-    <enumeratedValueSet variable="show-goal">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="walker-v-angle">
-      <value value="5"/>
-      <value value="10"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="g-orange">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="walker-vision-dist">
-      <value value="10"/>
-      <value value="30"/>
-      <value value="50"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="line-width">
-      <value value="2.2"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="vis-vision">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="g-streets">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="n-walker">
-      <value value="44"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="p_color">
-      <value value="&quot;orange&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="triangle-roads">
-      <value value="true"/>
-    </enumeratedValueSet>
-  </experiment>
   <experiment name="weg-zu-fuss" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
@@ -1417,11 +1372,11 @@ NetLogo 6.0.2
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="weg-zu-fuss_klein" repetitions="3" runMetricsEveryStep="false">
+  <experiment name="weg-zu-fuss_klein" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="4000"/>
-    <metric>waths</metric>
+    <metric>trampling</metric>
     <metric>pop</metric>
     <enumeratedValueSet variable="show-goal">
       <value value="false"/>
@@ -1432,7 +1387,7 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="walker-vision-dist">
       <value value="5"/>
       <value value="15"/>
-      <value value="45"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="line-width">
       <value value="1.2"/>
@@ -1442,9 +1397,10 @@ NetLogo 6.0.2
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="pop-lowlimit">
-      <value value="2"/>
+      <value value="1"/>
       <value value="5"/>
       <value value="15"/>
+      <value value="25"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="vis-pop">
       <value value="false"/>
@@ -1469,9 +1425,9 @@ NetLogo 6.0.2
       <value value="&quot;square&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
-      <value value="1"/>
       <value value="5"/>
       <value value="15"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="message">
       <value value="false"/>
