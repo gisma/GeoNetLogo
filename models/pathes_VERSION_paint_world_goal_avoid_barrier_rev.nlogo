@@ -11,11 +11,13 @@ globals [
   visible-routes
   gini-index-reserve
   lorenz-points
+  popularity-points
 ]
 
 ; setup procedure carried out once
 to setup
   clear-all
+  set vis-pop false
   ask patches [ set pcolor green
   set obstacle 0
   set popularity 0
@@ -35,7 +37,7 @@ to setup
 
   ; finsihed so reset ticks
   update-lorenz-and-gini
-  reset-ticks
+   reset-ticks
 end
 
 ; procedure that controls the model run
@@ -45,9 +47,13 @@ to go
   [scale-p]
   move-walkers
   update-lorenz-and-gini
+
   tick
 
-  if ticks = 4000 [export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")]
+  if ticks = 4000 [
+    export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
+    export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")
+  ]
 
 end
 
@@ -96,7 +102,7 @@ to-report best-way-to [ destination ]
   ; that would take me closer to my destination
 
   let visible-patches patches in-radius walker-vision-dist
-  ;let visible-routes visible-patches with [popularity > pop-lowlimit]
+  ;let visible-routes visible-patches with [popularity >= pop-lowlimit]
   ifelse not max-pop [set visible-routes visible-patches with [
      popularity >= pop-lowlimit]
    ;print "1"
@@ -203,16 +209,22 @@ end
 ; create some static and flexible experimental world setups
 to make-experiment
     if selected-experiment = "Y" [
+    ; not rotated
     ;https://www.triangle-calculator.com/de/?what=vc&a=-40&a1=-40&3dd=3D&a2=0&b=0&b1=29.2825&b2=0&c=40&c1=-40&c2=0&submit=Berechnen&3d=0
-    ;Schwerpunkt: SC[0; -17]
-    ask patches with [pcolor = orange] [set pcolor  green]
-    ask patches at-points [ [-40 -40] [0 29.2825]  [40 -40]] [ set pcolor orange]
+    ;[-40 -40] [0 29.2825]  [40 -40]
+    ;slightly rotated
+    ;https://www.triangle-calculator.com/de/?what=vc&a=-40&a1=-40&3dd=3D&a2=0&b=4&b1=29&b2=0&c=35&c1=-43&c2=0&submit=Berechnen&3d=0
 
+    ;recolorize remaining orange patches back to green
+    ask patches with [pcolor = orange] [set pcolor  green]
+    ;define goal patches and make them orange
+    ask patches at-points [ [-40 -36] [4 27] [35 -43]] [ set pcolor orange]
+    ; create walkers according to the settings
     ask  n-of n-walker patches [sprout-walkers 1 [
     if selected-experiment ="Y" [set goal one-of patches with [pcolor = orange]]
-      set size 4
-      set color 45
-      set shape "person student"]
+      set size 5
+      set color black
+      set shape "stud_tri"]
     ]
 
   ]
@@ -323,7 +335,7 @@ end
 ;#########################################################
 ; reporter for analysis
 to-report trampling
-  report  count patches  with [popularity > pop-lowlimit]
+  report  count patches  with [popularity >= pop-lowlimit]
 end
 
 to-report popularity-minimum
@@ -331,8 +343,8 @@ to-report popularity-minimum
 end
 
 to-report popularity-average
-let psum sum [popularity] of patches with [popularity > pop-lowlimit]
-let pcount count patches with [popularity > pop-lowlimit]
+let psum sum [popularity] of patches with [popularity >= pop-lowlimit]
+let pcount count patches with [popularity >= pop-lowlimit]
 report psum / pcount
 end
 
@@ -349,7 +361,7 @@ end
 
 to help
  clear-all
- import-drawing "interface.png"
+  import-drawing "help.png"
 if user-yes-or-no? "OK?"
   [ clear-all ]
 end
@@ -357,7 +369,7 @@ end
 ;; this procedure recomputes the value of gini-index-reserve
 ;; and the points in lorenz-points for the Lorenz and Gini-Index plots
 to update-lorenz-and-gini
-  let sorted-popularity sort [popularity] of patches with [popularity >  pop-lowlimit]
+  let sorted-popularity sort [popularity] of patches with [popularity >=  pop-lowlimit]
   let total-popularity sum sorted-popularity
   let popularity-sum-so-far 0
   let index 0
@@ -367,17 +379,23 @@ to update-lorenz-and-gini
   ;; now actually plot the Lorenz curve -- along the way, we also
   ;; calculate the Gini index.
   ;; (see the Info tab for a description of the curve and measure)
-  repeat count patches with [popularity >  pop-lowlimit] [
-    set popularity-sum-so-far (popularity-sum-so-far + item index sorted-popularity)
+  repeat count patches with [popularity >=  pop-lowlimit] [
+       set popularity-sum-so-far (popularity-sum-so-far + item index sorted-popularity)
     set lorenz-points lput ((popularity-sum-so-far / total-popularity) * 100) lorenz-points
     ;print lorenz-points
     set index (index + 1)
     set gini-index-reserve
       gini-index-reserve +
-      (index / count patches with [popularity >  pop-lowlimit]) -
+      (index / count patches with [popularity >=  pop-lowlimit]) -
       (popularity-sum-so-far / total-popularity)
   ]
 end
+
+; function reports a list of the popuklarity values of all patches >= pop-lowlimit
+to-report spop
+  report sort [popularity] of patches with [popularity >=  pop-lowlimit]
+end
+
 ; Copyright 2015 Uri Wilensky.
 ; See Info tab for full copyright and license.
 @#$#@#$#@
@@ -402,17 +420,17 @@ GRAPHICS-WINDOW
 50
 -50
 50
-1
-1
+0
+0
 1
 ticks
 45.0
 
 BUTTON
-320
-30
-385
-63
+35
+35
+140
+68
 NIL
 setup
 NIL
@@ -420,16 +438,16 @@ NIL
 T
 OBSERVER
 NIL
-NIL
+S
 NIL
 NIL
 1
 
 BUTTON
-390
-30
-455
-63
+165
+35
+265
+68
 go
 go
 T
@@ -437,7 +455,7 @@ T
 T
 OBSERVER
 NIL
-NIL
+G
 NIL
 NIL
 0
@@ -451,7 +469,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-50.0
+1.0
 1
 1
 NIL
@@ -572,10 +590,10 @@ TEXTBOX
 1
 
 MONITOR
-30
-640
-152
-681
+155
+580
+277
+621
 Zahl l pop > lowlimit
 trampling
 0
@@ -639,7 +657,7 @@ TEXTBOX
 1
 
 BUTTON
-170
+165
 470
 285
 503
@@ -662,7 +680,7 @@ SWITCH
 313
 vis-pop
 vis-pop
-0
+1
 1
 -1000
 
@@ -673,7 +691,7 @@ SWITCH
 138
 max-pop
 max-pop
-0
+1
 1
 -1000
 
@@ -683,7 +701,7 @@ INPUTBOX
 240
 200
 pop-lowlimit
-3.0
+1.0
 1
 0
 Number
@@ -701,9 +719,9 @@ Number
 
 MONITOR
 30
-590
+580
 147
-631
+621
 average popularity
 popularity-average
 0
@@ -721,15 +739,15 @@ TEXTBOX
 1
 
 PLOT
-765
+820
 580
-965
+980
 700
 Lorenz Kurve
 patches %
 popularity %
 0.0
-100.0
+101.0
 0.0
 100.0
 false
@@ -740,9 +758,9 @@ PENS
 "Gleichverteilung" 100.0 0 -16777216 true "plot 0\nplot 100" ""
 
 PLOT
-585
+660
 580
-760
+820
 700
 Gini vs Zeit
 Time
@@ -758,10 +776,10 @@ PENS
 "default" 1.0 0 -14070903 true "" "if ticks > 100[\nplot gini-05\n]"
 
 MONITOR
-155
-590
-252
-631
+30
+625
+145
+666
 max-popularity
 popularity-maximum
 0
@@ -769,37 +787,33 @@ popularity-maximum
 10
 
 MONITOR
-160
-640
-247
-681
+155
+625
+275
+666
 Zahl min pop
 popularity-minimum
 0
 1
 10
 
-MONITOR
-310
-620
-440
-665
-NIL
-lorenz-points
-17
-1
-11
-
-MONITOR
-455
-620
-515
-665
-NIL
-gini-index-reserve / trampling
-17
-1
-11
+PLOT
+500
+580
+660
+700
+number of patches per percentile 
+Percentile
+Count
+0.0
+100.0
+0.0
+100.0
+true
+false
+"\n" "ifelse popularity-maximum > pop-lowlimit\n[set-plot-x-range pop-lowlimit popularity-maximum]\n[set-plot-x-range pop-lowlimit (pop-lowlimit + 1)]\nset-histogram-num-bars 10"
+PENS
+"default" 1.0 1 -16777216 true "" "histogram spop"
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -813,51 +827,68 @@ Alle Akteure, die räumlich interagieren, müsssen diese Räume überwinden und 
 Folgt man Helbig [5] gibt es ein breites Interesse über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung ist theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet [z.B. 3]. Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs mit einem gegebnen Raum und seiner Bewegungsabsichten. 
 Im Vorliegenden Falle soll die spontane Entstehung von Trampelpfaden in einem einfachen geometrischen Raumsetting untersucht werden. 
 
-Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999] 
+Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als gute Wege können Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind solche Wege verfügbar oder werden als nicht nützlich empfunden enstehen häufig _wilde_ Wege also _Trampelpfade_. Modellsysteme wie Netlogo sind geeignet solche abstrahierten Struturen abzubilden und zu überprüfen[Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999].
+
+Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat. 
 
 ## Fragestellung und Hypothese
-
-Die Nutzerinnen der Abkürzungen erschaffen diese Wege und stabilisieren wiederkehrende Muster durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken. In der vorliegenden Studie soll untersucht werden ob und inwieweit die Anazhl der und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster hat.
+Die grundlegende  Beobachtung dass Trampelpfade entlang gemeinsam zurückgelegter Routen entstehen kann durch die Neigung begründet werden Wege zwischen Ausgangspunkt und Ziel zu optimieren. Es kann zudem beobachtet werden dass weitere Akteure dazu neigen sobald solche Spuren sichtbar sind diese verstärkt zu benutzen was wierderum die Sichtbarkeit erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden Trampelpfade die spezifiischen Regeln folgen.
 
 Es werden folgende Hypothesen aufgestellt:
 
-1. Je höher die wahrgenommene Popularität eines Trampelpades ist desto (1) kürzer sind die Verbindungen zwischen Zielen und (2) desto mehr einzelne Wege enstehen.
+1. Je höher die wahrnehmbare Popularität eines Trampelpfadpatches ist desto (1) kürzer sind die Verbindungen zwischen Zielen, (2) desto mehr direkte Punkt zu Punkt Wege enstehen und desto weniger Trampelpfadpatches entstehen.
 
-2. Je größer die Wahrnehmung der Akteure desto desto (1) kürzer sind die Verbindungen zwischen Zielen und (2) desto mehr einzelne Wege enstehen.
+2. Je weitreichender die Wahrnehmung der Akteure ist desto desto (1) stärker konvergieren Wege zu gemeinsam genutzten Pfaden mit (2) insgesamt mehr Nebenpfaden und (3) mehr Trampelpfadpatches als unter (1)
 
 ## Methoden und Anwendung 
 
-## Modellvorstellung
+###  Wortmodell
+Das aus den Beobachtungen abgeleitetete Modellwird folgendermassen formuliert: 
 
-Die grundlegende  Beobachtung dass Trampelpfade entlang gemeinsam zurückgelegter Routen entstehen kann durch die Neigung begründet werden Wege zwischen Ausgangspunkt und Ziel zu optimieren. Es kann zudem beobachtet werden dass weitere Akteure dazu neigen sobald solche Spuren sichtbar sind diese verstärkt zu benutzen was wierderum die Sichtbarkeit erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden Trampelpfade die spezifiischen Regeln folgen.
 
-Jeder Akteur:
+    "Bei zufällig gegebenen festen Zielen in einem isomorphen Raum wird auf einer
+     approximativ  linearen direkten Verbindung zwischen disen Zeilen ein Trampelpfad
+     durch Benutzung enstehen. Dieser direkte Weg wird modifiziert durch die Neigung der
+     Akteure bereits existierende Wegstücke auf dem Weg zum Ziel zu nutzen. Je mehr
+     dieser Wegstücke verfügbar sind und eingesehen werden können desto stäker wird eine
+     Veränderung von streng lineraen zu kurvigen und mehrspurigen Wegstrukturen
+     stattfinden"
 
-1. hat ein bekanntes Ziel
-2. versucht dieses Zeil möglichst auf direktem Weg zu erreichen  
-3. schätzt ein ob eine erkennbare Trittspur a) in dieser Richtung b) für ihn erkennbar erreichbar ist
-4. entscheidet nach der optimalen Distanz ob er den direkten Weg nimmt oder die Trittspur als Zwischenziel anläuft
+### Regeln
 
-Jede Raumeinheit hat einen definierten Zustand bezüglich:
+**Akteure (walkers)**
 
-1. ihreres Nutzungstatus (Grünland, Trittspur, Ziel)
-2. Die Trittspur wird bei jedem Betreten um einen Punkt aufgewertet um aus dem Grünland zu Trittspurzu wechseln,
+* haben immer ein bekanntes Ziel
+* versuchen dieses Zeil auf direktem Weg zu erreichen  
+* identifizieren auf dem Weg ob eine erkennbare Trittspur Richtung  auf das Ziel erkennbar ist
+* entscheiden dann aufgrund des Distanzvorteils der direkte Weg oder die Trittspur als Richtung gewählt wird
 
-## Einstellungen der Sensitivitätsstudie
+**Raumeinheiten (patches) haben die folgenden Eigenschaften**
 
-Die Hypothesenüberprüfung soll mit Hilfe einer Parameterschätzung und der Auswertung geeigneter Messgrößen erfolgen (Thiele et al. 2014).  erfolgen. Hierzu werden reproduzierbare Raumbedingnen (sieh Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseisntellungen in definierter Anzahl wiederholt.
+* Nutzung (Grünland [grün], Trittspur [grau je nach popularity], Ziel [orange])
+
+**Interaktion**
+
+* Die Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt (popularity) aufgewertet. Ab einem definierten Schwellwert wird aus Grünland eine Trittspur
+
+## Rahmenbedingungen des Modelllaufs
+
+Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der für die Hypothen relevanten PArameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen und in definierter Anzahl wiederholt.
+
 ### Zieleverteilung im Raum 
-Die Untersuchung wird mittels einer reproduzierbaren Anordnung von Zielen durchgeführt. Insbesondere werden ein asymetrisches Fünfeck (Haus vom Nikolaus), ein Quadrat und ein Dreieck in eine isomorphe Fläche positioniert (siehe Abbildung 1).  
+Es werden die Scheitelpunkte eines asymetrischen Fünfeck (Haus vom Nikolaus), eines Quadrats und eine leicht rotierten gleichseitigen Dreiecks auf einer isomorphen Fläche positioniert (siehe Abbildung 1).  
 
 ![Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck.](images/experiments_spatial_setup.png)
 Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat C Fünfeck
 
 ### Die Parametrisierung der Akteure 
-* Die Akteure werden in 10 fach wiederholten jeweils in einer Anazahl von 5, 10, 15 zufällig in Modellwelt eingesetzt und streben den jeweils zufällig zugelosten Zielpunkten zu. Bei erreichen erfolgt eine zufällige Neulosung. 
-* Die Sichtweite der Akteure wird von von über 1,5, 10, 20, 30, 50 Patches im Radius iteriert. 
-* Der Schwellwert eines attraktiven Trampelpad patches wird von 1 bis 25 um jeweils 1 erhöht 
 
-Zur Umsetzung wird das Behavoiur Space Werkzeug der NetLogo PÜrogrammierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"weg-zu-fuss"_ startet insgesamt 2400 Modelläufe.
+* Die Akteure werden in 10-fach wiederholten jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzt und streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles. 
+
+* Die Sichtweite der Akteure wird von von über 1, 25, 50 Patches im Radius iteriert. 
+* Der Schwellwert eines attraktiven Trampelpad patches wird von 1 bis 5 um jeweils 5 erhöht 
+
+Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry_run"_ startet insgesamt 2400 Modelläufe.
 
 
 ## Ergebnisse (ca. 750 Worte)
@@ -1264,10 +1295,10 @@ Polygon -7500403 true true 195 90 240 195 210 210 165 105
 Circle -7500403 true true 110 5 80
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
-Polygon -1 true false 100 210 130 225 145 165 85 135 63 189
-Polygon -13791810 true false 90 210 120 225 135 165 67 130 53 189
+Polygon -11221820 true false 100 210 130 225 145 165 85 135 63 189
+Polygon -2674135 true false 90 210 120 225 135 165 67 130 53 189
 Polygon -1 true false 120 224 131 225 124 210
-Line -16777216 false 139 168 126 225
+Line -13840069 false 139 168 126 225
 Line -16777216 false 140 167 76 136
 Polygon -7500403 true true 105 90 60 195 90 210 135 105
 
@@ -1348,6 +1379,18 @@ star
 false
 0
 Polygon -7500403 true true 151 1 185 108 298 108 207 175 242 282 151 216 59 282 94 175 3 108 116 108
+
+stud_tri
+false
+0
+Polygon -13791810 true false 135 90 150 105 135 165 150 180 165 165 150 105 165 90
+Polygon -7500403 true true 195 90 240 195 210 210 165 105
+Circle -7500403 true true 110 5 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -7500403 true true 105 90 60 195 90 210 135 105
+Polygon -1184463 true false 60 45 105 225 -15 180 30 105
+Circle -1184463 false false 39 159 42
 
 target
 false
@@ -1618,6 +1661,68 @@ NetLogo 6.0.2
     </enumeratedValueSet>
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="10"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="triangle" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="4000"/>
+    <metric>trampling</metric>
+    <metric>popularity-minimum</metric>
+    <metric>popularity-maximum</metric>
+    <metric>popularity-average</metric>
+    <metric>gini-05</metric>
+    <metric>lorenz-points</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="1"/>
+      <value value="35"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+      <value value="&quot;quadrat&quot;"/>
+      <value value="&quot;houseOfSantaClaus&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
