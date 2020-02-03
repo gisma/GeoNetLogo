@@ -310,26 +310,7 @@ to paint-p [p]
   ask p [ set pcolor gray]
 end
 
-to draw-world-items
-  while [mouse-down?] [
-    create-turtles 1 [
-      setxy mouse-xcor mouse-ycor
-      ask patches in-radius line-width [ set pcolor read-from-string p_color
-        if pcolor = red [set obstacle 1
-                         set streets 0]
-        if pcolor = gray [set obstacle 0
-                         set streets  1
-                         set popularity roads-pop
-        set popularity roads-pop]
-        if pcolor = green [set obstacle 0
-                         set streets  0
-                         set popularity 0]
-      ]
-      die
-    ]
-    display
-  ]
-end
+
 
 
 ;#########################################################
@@ -469,7 +450,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-50.0
+1.0
 1
 1
 NIL
@@ -485,48 +466,6 @@ show-goal
 1
 1
 -1000
-
-CHOOSER
-10
-590
-140
-635
-p_color
-p_color
-"red" "orange" "grey" "green"
-0
-
-BUTTON
-10
-640
-140
-680
-NIL
-draw-world-items
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-12
-555
-142
-588
-line-width
-line-width
-0.2
-5
-1.2
-0.2
-1
-NIL
-HORIZONTAL
 
 SLIDER
 10
@@ -576,16 +515,6 @@ TEXTBOX
 291
 -----------------------------------------Visualisation-------------------------------
 15
-0.0
-1
-
-TEXTBOX
--5
-535
-450
-561
-----------------DRAW----------------
-12
 0.0
 1
 
@@ -656,23 +585,6 @@ TEXTBOX
 0.0
 1
 
-BUTTON
-320
-680
-440
-713
-NIL
-help
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 SWITCH
 345
 280
@@ -680,7 +592,7 @@ SWITCH
 313
 vis-pop
 vis-pop
-0
+1
 1
 -1000
 
@@ -785,23 +697,6 @@ NIL
 NIL
 1
 
-BUTTON
-320
-640
-440
-673
-Remove walkers
-die
-NIL
-1
-T
-TURTLE
-NIL
-NIL
-NIL
-NIL
-1
-
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
 
@@ -878,48 +773,8 @@ Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10
 
 Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
-<table border = 1 style="width:100%">
-    <tr>
-        <td><b></td>
-        <td><b>run_1</td>
-        <td><b>run_2</td>
-        <td><b>run_3 <sup>1</sup></td>
-        <td><b>run_4<sup>1</sup></td>
-        <td><b>run_5</td>
-      <td><b>run_6</td>
-        <td><b>run_7</td>
-    </tr>
-    <tr>
-        <td><b>n-walkers</td>
-         <td>10</td>
-         <td>50</td>
-         <td>10</td> 
-        <td>10</td>
-         <td>10</td>
-        <td>10</td>
-         <td>10</td>
-    </tr>
-    <tr>
-        <td><b>walker-vis-dist</td>
-         <td>1</td>
-         <td>1</td>
-         <td>25</td>
-         <td>50</td>
-         <td>1</td> 
-         <td>25</td>
-         <td>50</td>
-    </tr>
-    <tr>
-        <td><b>max-pop</td>
-         <td>false</td>
-         <td>false</td>
-         <td>false</td>
-         <td>false</td> 
-         <td>true</td>
-         <td>true</td> 
-         <td>true</td>
-    </tr>
-</table>
+
+![Tabell1]( images/tab1.png)
 
 Bemerkung: <sup>1, 2</sup> beinhalten auch Modelläufe zur Auswertung der quadratischen Zielstruktur.
 
@@ -933,7 +788,7 @@ Da in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der pat
 
 In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
 
-![Modellläufe 1 und 2]( images/abb2.png)
+![Modellläufe 1 und 2]( images/run_1_10_50_vision1_false.png)
 
 Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
@@ -941,40 +796,14 @@ Die schwarz visualisierten Patches weisen eine Betretung gleich des _min-poplimi
 
 Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
 
+![Tabell2]( images/tab2.png)
 
-<table border = 1 style="width:100%">
-    <tr>
-        <td><b></td>
-        <td><b>run_1_1</td>
-        <td><b>run_1_2</td>
-        <td><b>run_1_3</td>
-        <td><b>run_1_4</td>
-        <td><b>run_1_5</td>
-        <td><b>run_2_1</td>
-        <td><b>run_2_2</td>
-        <td><b>run_2_3</td>
-        <td><b>run_2_4</td>
-        <td><b>run_2_5</td>    </tr>
-    <tr>
-        <td><b>(popularity = min-poplimit) / (popularity > min-poplimit) </td>
-         <td>0.965</td>
-         <td>0.796</td>
-         <td>0.958</td> 
-        <td>1.027</td>
-         <td>1.033</td>
-        <td>0.429</td>
-         <td>0.450</td>
-        <td>0.579</td>
-         <td>0.600</td>
-        <td>0.578</td>
-    </tr>
-</table>
 
 ### Modelläufe 3 und 4 - Flexible Orientierung 
 
-In Abbildungspanel 3 sind **run\_3** und **run\_4** (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterete Wahrnehmung der walkers (siehe Tabelle 1). Gut zu erkennen sind für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes die deutlich gekrümmten und aufgespreizten Trampelpade zwischen den Zielpunkten. Vor allem im _run\_3_ fällt die Variabilität des Hauptmusters auf. Hier ist die Reichweite der _walker-vis-dist_  mit 25 deutlich eingeschränkter als im _run\_4_ (50). Daher sind die resultierenden Muster abhängiger von der initialen Verteilung der Akteure. Im _run\_4_ ist dieses Muster dank der größeren Reichweite der _walker-vis-dist_ deutlich stabiler und unabhägiger von der Erstverteielung im Raum. Auch gut zu erkennen ist die Verteilung der _popularity_, die anders als zuvor in den ersten 3 Perzentilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
+In Abbildungspanel 3 sind **run\_3** und **run\_4** (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterete Wahrnehmung der walkers (siehe Tabelle 1). Gut zu erkennen sind für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes die deutlich gekrümmten und aufgespreizten Trampelpade zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die anders als zuvor in den ersten 3 Perzentilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
 
-![Modellläufe 3 und 4]( images/abb3.png)
+![Modellläufe 3 und 4]( images/run_3-4.png)
 
 Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
