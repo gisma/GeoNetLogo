@@ -921,25 +921,25 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
         <td><b>walker-vis-dist</td>
          <td>1</td>
          <td>1</td>
-         <td>1</td>
          <td>25</td>
-         <td>25</td> 
          <td>50</td>
+         <td>1</td> 
+         <td>25</td>
          <td>50</td>
     </tr>
     <tr>
         <td><b>max-pop</td>
          <td>false</td>
          <td>false</td>
+         <td>false</td>
+         <td>false</td> 
          <td>true</td>
          <td>true</td> 
-         <td>false</td>
-         <td>true</td> 
-         <td>false</td>
+         <td>true</td>
     </tr>
 </table>
 
-
+### Modelläufe 1 und 2 - Fokussierte Orientierung
 
 In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
 
@@ -980,8 +980,12 @@ Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _populari
     </tr>
 </table>
 
+### Modelläufe 3 und 4 - Flexible Orientierung 
+In Abbildungspanel 3 sind **run\_3** bis **run\_4** (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich vor allem durch die Vision und die Orientierung an einem Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
 
+![Modellläufe 3 und 4]( images/run_3-4.png)
 
+Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
 
 
