@@ -867,18 +867,14 @@ Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines Quadrats
 ![Räumliche Positionen der Experimente A Dreieck, B Quadrat.](images/spatial_setup.png)
 Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne Flächen sind Grünland, Orange Punkte die Ziele. Trittspuren und Agenten sind noch nicht vorhanden.
 
-### Die Parametrisierung der Simulationen
+### Das Netlogo Modell paths-simulater-2019
 
-* Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles. Für jede 5-fache Wiederholung gilt:
-
-* Die Sichtweite der Akteure wird über 1, 25, 50 Patches im Radius iteriert.
-* Der Schwellwert eines attraktiven Trampelpad Patches wird mit 1 und 5 initialisiert.
+Das verwendete _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) als Szenarien implementiert und verwendet (vgl. Abbildung 1). 
 
 Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Die in diese Modelldatei integrierten Behaviour Space Skripte _"run_1_2_Y"_, _"run_3_4_Y"_, _"run_5-7_Y"_ und _"run_1_3_4_square"_ starten insgesamt 50 Modelläufe, die die Basis der Auswertung liefern. (vgl. Tabelle 1).
 
-### Netlogo Modell paths-simulater-2019
+Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10  zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles. Für jede 5-fache Wiederholung wird die Sichtweite der Akteure über verschiedene Radien iteriert. Für genauen Einstellung je Simulation sei auf den Behaviour Space verwiesen.
 
-Das verwendete _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) als Szenarien implementiert und verwendet (vgl. Abbildung 1). 
 
 Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
