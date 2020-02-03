@@ -874,7 +874,7 @@ Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne 
 * Die Sichtweite der Akteure wird über 1, 25, 50 Patches im Radius iteriert.
 * Der Schwellwert eines attraktiven Trampelpad Patches wird mit 1 und 5 initialisiert.
 
-Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry-run"_ startet 60 Modelläufe (vgl. Tabelle 1).
+Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Die in diese Modelldatei integrierten Behaviour Space Skripte _"run_1_2_Y"_, _"run_3_4_Y"_, _"run_5-7_Y"_ und _"run_1_3_4_square"_ starten insgesamt 50 Modelläufe, die die Basis der Auswertung liefern. (vgl. Tabelle 1).
 
 ### Netlogo Modell paths-simulater-2019
 
@@ -887,8 +887,8 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
         <td><b></td>
         <td><b>run_1</td>
         <td><b>run_2</td>
-        <td><b>run_3</td>
-        <td><b>run_4</td>
+        <td><b>run_3 <sup>1</sup></td>
+        <td><b>run_4<sup>1</sup></td>
         <td><b>run_5</td>
       <td><b>run_6</td>
         <td><b>run_7</td>
@@ -925,6 +925,7 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
     </tr>
 </table>
 
+Bemerkung: <sup>1, 2</sup> beinhalten auch Modelläufe zur Auswertung der quadratischen Zielstruktur.
 
 
 ## Ergebnisse 
@@ -1575,7 +1576,121 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="geometry-run" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="run_1_2_y" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
+export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
+    <timeLimit steps="2500"/>
+    <metric>trampling</metric>
+    <metric>popularity-minimum</metric>
+    <metric>popularity-maximum</metric>
+    <metric>popularity-average</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="10"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="run_3_4_y" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
+export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
+    <timeLimit steps="2500"/>
+    <metric>trampling</metric>
+    <metric>popularity-minimum</metric>
+    <metric>popularity-maximum</metric>
+    <metric>popularity-average</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="25"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="run_1_3_4_square" repetitions="5" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
@@ -1624,12 +1739,68 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
       <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="selected-experiment">
-      <value value="&quot;Y&quot;"/>
       <value value="&quot;square&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="message">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="run_4-7_y" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
+export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
+    <timeLimit steps="2500"/>
+    <metric>trampling</metric>
+    <metric>popularity-minimum</metric>
+    <metric>popularity-maximum</metric>
+    <metric>popularity-average</metric>
+    <enumeratedValueSet variable="show-goal">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-v-angle">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="line-width">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="walker-vision-dist">
+      <value value="1"/>
+      <value value="25"/>
       <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-pop">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pop-lowlimit">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-pop">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="p_color">
+      <value value="&quot;red&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="road-width">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="roads-pop">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="preset-roads">
+      <value value="&quot;none&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vis-vision">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="selected-experiment">
+      <value value="&quot;Y&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="n-walker">
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="message">
       <value value="false"/>
