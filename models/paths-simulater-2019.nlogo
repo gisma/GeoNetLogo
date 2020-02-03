@@ -842,28 +842,24 @@ Zur Abstraktion und Modellbildung wird nach Bossel (2004) aus den Beobachtungen 
 ### Regeln aus dem Wortmodell
 Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
-**Akteure (walkers)**
-
-agieren nach den folgenden Regeln:
+Die **Akteure (walkers)** agieren nach den folgenden Regeln:
 
 * haben immer ein bekanntes Ziel
 * versuchen dieses Ziel auf direktem Weg zu erreichen
 * identifizieren je Schritt ob eine Trittspur in Richtung zum Ziel erkennbar ist
 * falls so, wählen sie die richtung auf die Trittspur falls damit der Weg zum Ziel verkürzt wird
 
-**Raumeinheiten (patches)**
-
-haben die folgenden Eigenschaften:
+Die **Raumeinheiten (patches)** haben die folgenden Eigenschaften:
 
 * Nutzung (Grünland [grün], Trittspur [grau je nach popularity], Ziel [orange])
 
-**Interaktion**
+Folgende  **Interaktion** (Prozesse) finden statt:
 
 * Die Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt (popularity) aufgewertet. Ab einem definierten Schwellwert der popularity wird aus Grünland eine Trittspur.
 
 ### Rahmenbedingungen des Modelllaufs
 
-Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen und in definierter Anzahl wiederholt.
+Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen in definierter Anzahl wiederholt.
 
 ### Ziele und  Raum
 Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines Quadrats und eines leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) auf einer isomorphen Fläche (grün) positioniert (siehe Abbildung 1).
@@ -873,26 +869,16 @@ Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne 
 
 ### Die Parametrisierung der Simulationen
 
-* Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles.
-
-Für jede 5-fache Wiederholung gilt:
+* Die Simulation wird in 5-facher Wiederholung mit jeweils mit einer Anzahl von 10 und 50 zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine zufällige Neulosung des nächsten Zieles. Für jede 5-fache Wiederholung gilt:
 
 * Die Sichtweite der Akteure wird über 1, 25, 50 Patches im Radius iteriert.
 * Der Schwellwert eines attraktiven Trampelpad Patches wird mit 1 und 5 initialisiert.
 
-Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry-run"_ startet 60 Modelläufe.
+Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung verwendet. Das in diese Modelldatei integrierte Setup _"geometry-run"_ startet 60 Modelläufe (vgl. Tabelle 1).
 
 ### Netlogo Modell paths-simulater-2019
 
-Das _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort verwendete zentrale Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert.
-
-Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) implementiert und verwendet. 
-
-## Ergebnisse 
-Die Modellläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
-
-DA in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt werden. 
-
+Das verwendete _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) als Szenarien implementiert und verwendet (vgl. Abbildung 1). 
 
 Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
@@ -938,6 +924,13 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
          <td>true</td>
     </tr>
 </table>
+
+
+
+## Ergebnisse 
+Die Simulationsläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
+
+Da in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt werden. 
 
 ### Modelläufe 1 und 2 - Fokussierte Orientierung
 
