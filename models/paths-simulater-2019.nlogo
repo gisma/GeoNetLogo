@@ -868,7 +868,7 @@ Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der rel
 ### Ziele und  Raum
 Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines Quadrats und eines leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) auf einer isomorphen Fläche (grün) positioniert (siehe Abbildung 1).
 
-![Räumliche Positionen der Experimente A Dreieck, B Quadrat.](images/experiments_spatial_setup.png)
+![Räumliche Positionen der Experimente A Dreieck, B Quadrat.](images/spatial_setup.png)
 Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne Flächen sind Grünland, Orange Punkte die Ziele. Trittspuren und Agenten sind noch nicht vorhanden.
 
 ### Die Parametrisierung der Simulationen
@@ -892,6 +892,9 @@ Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szena
 Die Modellläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
 
 DA in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt werden. 
+
+
+Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
 <table border = 1 style="width:100%">
     <tr>
@@ -936,16 +939,17 @@ DA in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der pat
     </tr>
 </table>
 
-Tabell1 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
 
-In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. 
+In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
 
 ![Modellläufe 1 und 2]( images/run_1_10_50_vision1_false.png)
 
 Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
 Die schwarz visualisierten Patches weisen eine Betretung gleich des _min-poplimit_ Schwellenwertes aus und markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorrausgesetzt) erwartet werden dass dieser Anteil im Verhältnis zu den patches mit einer Popularity größer des _min-poplimit_ Schwellenwertes sich stabilisiert und ähnlich ist. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
+
+Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
 
 
 <table border = 1 style="width:100%">
