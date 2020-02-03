@@ -36,7 +36,7 @@ to setup
   ]
 
   ; finsihed so reset ticks
-  update-lorenz-and-gini
+  ;update-lorenz-and-gini
    reset-ticks
 end
 
@@ -46,7 +46,7 @@ to go
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
   move-walkers
-  update-lorenz-and-gini
+  ;update-lorenz-and-gini
 
   tick
 
@@ -862,10 +862,10 @@ Folgende  **Interaktion** (Prozesse) finden statt:
 Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Zur systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen in definierter Anzahl wiederholt.
 
 ### Ziele und  Raum
-Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines Quadrats und eines leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) auf einer isomorphen Fläche (grün) positioniert (siehe Abbildung 1).
+Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf einer isomorphen Fläche (grün) leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) gebildet (siehe Abbildung 1).
 
-![Räumliche Positionen der Experimente A Dreieck, B Quadrat.](images/spatial_setup.png)
-Abbildung 1: Räumliche Positionen der Experimente A Dreieck, B Quadrat. Grüne Flächen sind Grünland, Orange Punkte die Ziele. Trittspuren und Agenten sind noch nicht vorhanden.
+![Räumliche Positionen des Experiments Dreieck.](images/abb1.png)
+Abbildung 1: Räumliche Positionen der Experiments die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) die Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht vorhanden.
 
 ### Das Netlogo Modell paths-simulater-2019
 
@@ -883,8 +883,8 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
         <td><b></td>
         <td><b>run_1</td>
         <td><b>run_2</td>
-        <td><b>run_3 <sup>1</sup></td>
-        <td><b>run_4<sup>1</sup></td>
+        <td><b>run_3 </td>
+        <td><b>run_4</td>
         <td><b>run_5</td>
       <td><b>run_6</td>
         <td><b>run_7</td>
@@ -921,7 +921,7 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
     </tr>
 </table>
 
-Bemerkung: <sup>1, 2</sup> beinhalten auch Modelläufe zur Auswertung der quadratischen Zielstruktur.
+
 
 
 ## Ergebnisse 
@@ -939,7 +939,7 @@ Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50,
 
 Die schwarz visualisierten Patches weisen eine Betretung gleich des _min-poplimit_ Schwellenwertes aus und markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorrausgesetzt) erwartet werden dass dieser Anteil im Verhältnis zu den patches mit einer Popularity größer des _min-poplimit_ Schwellenwertes sich stabilisiert und ähnlich ist. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
 
-Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
+Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ (pop-ratio)
 
 
 <table border = 1 style="width:100%">
@@ -956,7 +956,7 @@ Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _populari
         <td><b>run_2_4</td>
         <td><b>run_2_5</td>    </tr>
     <tr>
-        <td><b>(popularity = min-poplimit) / (popularity > min-poplimit) </td>
+        <td><b>pop-ratio</td>
          <td>0.965</td>
          <td>0.796</td>
          <td>0.958</td> 
