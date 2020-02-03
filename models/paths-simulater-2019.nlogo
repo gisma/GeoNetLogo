@@ -927,11 +927,11 @@ Bemerkung: <sup>1, 2</sup> beinhalten auch Modelläufe zur Auswertung der quadra
 ## Ergebnisse 
 Die Simulationsläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
 
-Da in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt werden. 
+Da in _run\_1 und _run\_2_ gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt. Dies vernachtlässigt die Beobachtung, dass bei wenigen Akteuren und einer eingeschränkten Sicht (siehe _run\_3_) zwar oranisch vergleichbare Muster jedoch in Ausprägung und Lage sehr varierende Muster enstehen. 
 
 ### Modelläufe 1 und 2 - Fokussierte Orientierung
 
-In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
+In Abbildungspanel 2 sind _run\_1_ und _run\_2_ (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen Peack im 1-Perzentil aufweist und dann im 7-9 Perzentil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) Popularitywerten der patches gebildet wird. 
 
 ![Modellläufe 1 und 2]( images/abb2.png)
 
@@ -972,18 +972,18 @@ Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _populari
 
 ### Modelläufe 3 und 4 - Flexible Orientierung 
 
-In Abbildungspanel 3 sind **run\_3** und **run\_4** (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterete Wahrnehmung der walkers (siehe Tabelle 1). Gut zu erkennen sind für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes die deutlich gekrümmten und aufgespreizten Trampelpade zwischen den Zielpunkten. Vor allem im _run\_3_ fällt die Variabilität des Hauptmusters auf. Hier ist die Reichweite der _walker-vis-dist_  mit 25 deutlich eingeschränkter als im _run\_4_ (50). Daher sind die resultierenden Muster abhängiger von der initialen Verteilung der Akteure. Im _run\_4_ ist dieses Muster dank der größeren Reichweite der _walker-vis-dist_ deutlich stabiler und unabhägiger von der Erstverteielung im Raum. Auch gut zu erkennen ist die Verteilung der _popularity_, die anders als zuvor in den ersten 3 Perzentilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
+In Abbildungspanel 3 sind _run\_3_ und _run\_4_ (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterete Wahrnehmung der walkers (siehe Tabelle 1). Gut zu erkennen sind für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes die deutlich gekrümmten und aufgespreizten Trampelpade zwischen den Zielpunkten. Vor allem im _run\_3_ fällt die Variabilität des Hauptmusters auf. Hier ist die Reichweite der _walker-vis-dist_  mit 25 deutlich eingeschränkter als im _run\_4_ (50). Daher sind die resultierenden Muster abhängiger von der initialen Verteilung der Akteure. Im _run\_4_ ist dieses Muster dank der größeren Reichweite der _walker-vis-dist_ deutlich stabiler und unabhägiger von der Erstverteielung im Raum. Auch gut zu erkennen ist die Verteilung der _popularity_, die anders als zuvor in den ersten 3 Perzentilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
 
 ![Modellläufe 3 und 4]( images/abb3.png)
 
-Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _gleich min-poplimit_ häufig betreten worden. _Größer min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
 
 
 
 ### Modelläufe 5 - 7 - Fokussierte Orientierung auf maximalePopularität 
 
-In Abbildungspanel 4 sind **run\_5** bis **run\_7** (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und Orientierung an der maximal erreichbaren Popularität (siehe Tabelle 1). 
+In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und Orientierung an der maximal erreichbaren Popularität (siehe Tabelle 1). 
 
 ![Modellläufe 5 - 7]( images/run_5-7.png)
 
