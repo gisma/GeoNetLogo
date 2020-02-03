@@ -803,7 +803,7 @@ NIL
 1
 
 @#$#@#$#@
-## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
+## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
 
 Rieke Ammoneit und Chris Reudenbach 2020
 
@@ -1008,7 +1008,7 @@ Auf dieser Grundlage kann geschlossen werden dass das vorliegende Modell in der 
 1. Grider, R. and  U. Wilensky, U. (2015). NetLogo Paths model. (http://ccl.northwestern.edu/netlogo/models/Paths). Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 1. Helbing D., Keltsch & P. Molnar (1997), Modelling the evolution of human trail systems Nature  Vol. 388.
 1. Henderson L.F. /1974), On the fluid mechanics of human crowd motion, Transportation Research, Volume 8, Issue 6, 1974, Pages 509-515, [DOI](https://doi.org/10.1016/0041-1647(74)90027-6).
-1. Machado A.: "Campos de Castilla", 1917 zit nach [URL](http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm), Zugriff: 28.01.2020
+1. <sup>*</sup> Machado A.: "Campos de Castilla", 1917, zit nach [URL](http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm), Zugriff: 28.01.2020
 1. Molnar P. (1995), Modellierung und Simulation der Dynamik von Fußgängerströmen (Diss.), [URL](http://www.cis.cau.edu/~pmolnar/dissertation/dissertation.html)
 1. Schaber C. (2006), Space Syntax als Werkzeug zur Analyse des Stadtraums und menschlicher Fortbewegung im öffentlichen Raum unter besonderer Berücksichtigung schienengebundener Verkehrssysteme.   Das Beispiel des Leipziger City-Tunnels. Masterarbeit. [URL](https://e-pub.uni-weimar.de/opus4/frontdoor/deliver/index/docId/2112/file/SCHABER+2007+-+Space+Syntax+als+Werkzeug_pdfa.pdf), Zugriff: 28.01.2020
 1. Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. [URL](https://books.google.de/books?id=lJzgxgEACAAJ)Zugriff: 28.01.2020
