@@ -402,10 +402,10 @@ end
 GRAPHICS-WINDOW
 465
 10
-980
-546
-50
-50
+978
+524
+-1
+-1
 5.0
 1
 12
@@ -469,7 +469,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-1
+1.0
 1
 1
 NIL
@@ -487,20 +487,20 @@ show-goal
 -1000
 
 CHOOSER
-20
-500
-150
-545
+10
+590
+140
+635
 p_color
 p_color
 "red" "orange" "grey" "green"
 0
 
 BUTTON
-165
-510
-285
-543
+10
+640
+140
+680
 NIL
 draw-world-items
 T
@@ -514,10 +514,10 @@ NIL
 1
 
 SLIDER
-22
-465
-152
-498
+12
+555
+142
+588
 line-width
 line-width
 0.2
@@ -537,7 +537,7 @@ n-walker
 n-walker
 1
 100
-10
+50.0
 1
 1
 NIL
@@ -552,7 +552,7 @@ walker-v-angle
 walker-v-angle
 1
 360
-1
+1.0
 1
 1
 NIL
@@ -580,20 +580,20 @@ TEXTBOX
 1
 
 TEXTBOX
-5
-445
-460
-471
------------------------------------------------------------DRAW--------------------------------------------
+-5
+535
+450
+561
+----------------DRAW----------------
 12
 0.0
 1
 
 MONITOR
-155
-580
-277
-621
+465
+545
+585
+586
 Zahl l pop > lowlimit
 trampling
 0
@@ -619,7 +619,7 @@ road-width
 road-width
 1
 6
-1
+1.0
 1
 1
 NIL
@@ -657,10 +657,10 @@ TEXTBOX
 1
 
 BUTTON
-165
-470
-285
-503
+320
+680
+440
+713
 NIL
 help
 NIL
@@ -680,7 +680,7 @@ SWITCH
 313
 vis-pop
 vis-pop
-1
+0
 1
 -1000
 
@@ -701,7 +701,7 @@ INPUTBOX
 240
 200
 pop-lowlimit
-1
+1.0
 1
 0
 Number
@@ -712,74 +712,27 @@ INPUTBOX
 310
 200
 roads-pop
-2000
+2000.0
 1
 0
 Number
 
 MONITOR
-30
-580
-147
-621
+465
+635
+585
+676
 average popularity
 popularity-average
 0
 1
 10
 
-TEXTBOX
-30
-555
-965
-596
-----------------------------------------------------------------------------------------------------------------------Output--------------------------------------------------------------------------------------------------------
-12
-0.0
-1
-
-PLOT
-820
-580
-980
-700
-Lorenz Kurve
-patches %
-popularity %
-0.0
-101.0
-0.0
-100.0
-false
-false
-"" ""
-PENS
-"Lorenz " 1.0 0 -955883 true "" "plot-pen-reset\nif ticks > 10[\nlet pop-p count patches with [popularity >  pop-lowlimit]\nif pop-p < 1 [set pop-p 1\n]\nset-plot-pen-interval 100 / pop-p\nplot 0\nforeach lorenz-points plot]"
-"Gleichverteilung" 100.0 0 -16777216 true "plot 0\nplot 100" ""
-
-PLOT
-660
-580
-820
-700
-Gini vs Zeit
-Time
-Gini
-0.0
-400.0
-0.0
-0.5
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -14070903 true "" "if ticks > 100[\nplot gini-05\n]"
-
 MONITOR
-30
-625
-145
-666
+465
+680
+585
+721
 max-popularity
 popularity-maximum
 0
@@ -787,10 +740,10 @@ popularity-maximum
 10
 
 MONITOR
-155
-625
-275
-666
+465
+590
+585
+631
 Zahl min pop
 popularity-minimum
 0
@@ -798,10 +751,10 @@ popularity-minimum
 10
 
 PLOT
-500
-580
-660
-700
+615
+545
+985
+720
 number of patches per percentile
 Percentile
 Count
@@ -814,6 +767,40 @@ false
 "" "ifelse popularity-maximum > pop-lowlimit\n[set-plot-x-range pop-lowlimit popularity-maximum]\n[set-plot-x-range pop-lowlimit (pop-lowlimit + 1)]\nset-histogram-num-bars 10"
 PENS
 "default" 50.0 1 -16777216 true "" "histogram spop"
+
+BUTTON
+290
+35
+377
+68
+go-once
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+320
+640
+440
+673
+Remove walkers
+die
+NIL
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß_ - Selbstorganisation von Trampelpfaden im Raum
@@ -899,12 +886,16 @@ Zur Umsetzung wird das Behaviour Space Werkzeug der NetLogo Programmierumgebung 
 
 Das _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Library Modells _"paths"_ (Grider & Wilensky 2015). Die dort verwendete zentrale Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert.
 
-Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) implementiert und verwendet.
+Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) implementiert und verwendet. 
 
 
 ## Ergebnisse (ca. 750 Worte)
+Die Modellläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufkeine weiteren Wegstrukturen. 
 
-Die Modelläufe (jeweils nach 2500 Zeitschritten) sind in Abbildung 2 als Panel dargestellt.
+![Modelllauf 2](images/run50_vision1.png)
+Abbildung 2: Modelllauf 2 mit : walker-vision-dist = 1, n-walkers = 50, max-pop = false, Wiederholungsläufe 1-5. 
+
+
 
 In einer ersten visuellen Inspektion zeigen sich folgende Muster:
 
@@ -1502,9 +1493,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.3.1
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -1519,7 +1509,6 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <metric>popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
-    <metric>gini-05</metric>
     <enumeratedValueSet variable="show-goal">
       <value value="false"/>
     </enumeratedValueSet>
@@ -1560,7 +1549,7 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     </enumeratedValueSet>
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
-      <value value="&quot;quadrat&quot;"/>
+      <value value="&quot;square&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
@@ -1583,7 +1572,6 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 1
 @#$#@#$#@
