@@ -537,7 +537,7 @@ n-walker
 n-walker
 1
 100
-50.0
+10.0
 1
 1
 NIL
@@ -939,13 +939,47 @@ DA in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der pat
 Tabell1 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
 
 
-![Modelllauf 2](images/run_1_50_vision1_false.png)
+In Abbildungspanel 2 sind **run\_1** unmd **run\_2** (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  von **1** durchgeführt worden. Gut zu erkennen sind die faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_ Schwellenwertes zwischen den Zielpunkten. 
 
-Abbildung 2: Modelllauf 2 mit : walker-vision-dist = 1, n-walkers = 50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+![Modellläufe 1 und 2]( images/run_1_10_50_vision1_false.png)
+
+Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+
+Die schwarz visualisierten Patches weisen eine Betretung gleich des _min-poplimit_ Schwellenwertes aus und markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorrausgesetzt) erwartet werden dass dieser Anteil im Verhältnis zu den patches mit einer Popularity größer des _min-poplimit_ Schwellenwertes sich stabilisiert und ähnlich ist. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
+
+
+<table border = 1 style="width:100%">
+    <tr>
+        <td><b></td>
+        <td><b>run_1_1</td>
+        <td><b>run_1_2</td>
+        <td><b>run_1_3</td>
+        <td><b>run_1_4</td>
+        <td><b>run_1_5</td>
+        <td><b>run_2_1</td>
+        <td><b>run_2_2</td>
+        <td><b>run_2_3</td>
+        <td><b>run_2_4</td>
+        <td><b>run_2_5</td>    </tr>
+    <tr>
+        <td><b>(popularity = min-poplimit) / (popularity > min-poplimit) </td>
+         <td>0.965</td>
+         <td>0.796</td>
+         <td>0.958</td> 
+        <td>1.027</td>
+         <td>1.033</td>
+        <td>0.429</td>
+         <td>0.450</td>
+        <td>0.579</td>
+         <td>0.600</td>
+        <td>0.578</td>
+    </tr>
+</table>
 
 
 
-In einer ersten visuellen Inspektion zeigen sich folgende Muster:
+
+
 
 
 
@@ -969,7 +1003,7 @@ In einer ersten visuellen Inspektion zeigen sich folgende Muster:
 1. Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
 1. Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, URL: http://jasss.soc.surrey.ac.uk/17/3/11.html DOI: 10.18564/jasss.2503
 1. Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
-1. Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
+1. Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 @#$#@#$#@
 default
 true
