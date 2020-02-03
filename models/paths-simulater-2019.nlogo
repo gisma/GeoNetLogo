@@ -888,57 +888,88 @@ Das _"paths-simulater-2019"_  Modell ist eine Weiterentwicklung des NetLogo-Libr
 
 Für die vorliegende Untersuchung wurden die in Abbildung 1 gezeigten Ziel-Szenarien _Y_ und _quadrat_ in Anlehnung an Helbing (1997) implementiert und verwendet. 
 
+## Ergebnisse 
+Die Modellläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
 
-## Ergebnisse (ca. 750 Worte)
-Die Modellläufe wurden 2500 Zeitschritte iteriert und die Ergebnisse dann gesichert. In allen Modelläufen enstanden zu dieser Laufkeine weiteren Wegstrukturen. 
+DA in run_1 und run_2 gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden zur visuellen Inspektion exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt werden. 
 
-![Modelllauf 2](images/run50_vision1.png)
-Abbildung 2: Modelllauf 2 mit : walker-vision-dist = 1, n-walkers = 50, max-pop = false, Wiederholungsläufe 1-5. 
+<table border = 1 style="width:100%">
+    <tr>
+        <td><b></td>
+        <td><b>run_1</td>
+        <td><b>run_2</td>
+        <td><b>run_3</td>
+        <td><b>run_4</td>
+        <td><b>run_5</td>
+      <td><b>run_6</td>
+        <td><b>run_7</td>
+    </tr>
+    <tr>
+        <td><b>n-walkers</td>
+         <td>10</td>
+         <td>50</td>
+         <td>10</td> 
+        <td>10</td>
+         <td>10</td>
+        <td>10</td>
+         <td>10</td>
+    </tr>
+    <tr>
+        <td><b>walker-vis-dist</td>
+         <td>1</td>
+         <td>1</td>
+         <td>1</td>
+         <td>25</td>
+         <td>25</td> 
+         <td>50</td>
+         <td>50</td>
+    </tr>
+    <tr>
+        <td><b>max-pop</td>
+         <td>false</td>
+         <td>false</td>
+         <td>true</td>
+         <td>true</td> 
+         <td>false</td>
+         <td>true</td> 
+         <td>false</td>
+    </tr>
+</table>
+
+Tabell1 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2.
+
+
+![Modelllauf 2](images/run_1_50_vision1_false.png)
+
+Abbildung 2: Modelllauf 2 mit : walker-vision-dist = 1, n-walkers = 50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
 
 
 In einer ersten visuellen Inspektion zeigen sich folgende Muster:
 
-<table>
-    <tr>
-        <td><b> typ </td>
-        <td><b>ueber 1 </td>
-        <td><b>uber2</b></td>
-    </tr>
-    <tr>
-        <td>max popularity true</td>
-         <td>oh</td>
-         <td>je</td>
-    </tr>
-    <tr>
-        <td>max popularity false</td>
-         <td>oh</td>
-         <td>je</td>
-    </tr>
 
-</table>
 
 
 
 ## Diskussion
 
 
-## Referenzen (wie verwendet)
-Bossel, H, (2004), Systeme, Dynamik, Simulation : Modellbildung, Analyse und Simulation komplexer Systeme. Norderstedt, Books on Demand GmbH.
-Feistel,R. & Ebeling, W. (1989), Evolution of Complex Systems. Self-Organization, Entropy and Development. Kluwer, Dordrecht,1989.
-Gilbert N. & S. Bankes (2002), Platforms and methods for agent-based modeling. Proc. Natl. Acad.Sci. USA 99. Suppl 3.
-Grider, R. and  U. Wilensky, U. (2015). NetLogo Paths model. http://ccl.northwestern.edu/netlogo/models/Paths. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
-Helbing D., Keltsch & P. Molnar (1997), Modelling the evolution of human trail systems Nature  Vol. 388.
-Henderson L.F. /1974), On the fluid mechanics of human crowd motion, Transportation Research, Volume 8, Issue 6, 1974, Pages 509-515, DOI: https://doi.org/10.1016/0041-1647(74)90027-6.
-Machado A.: "Campos de Castilla", 1917 zit nach URL: http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm, Zugriff: 28.01.2020
-Molnar P. (1995), Modellierung und Simulation der Dynamik von Fußgängerströmen (Diss.), URL: http://www.cis.cau.edu/~pmolnar/dissertation/dissertation.html (Stand: 21.August 2006
-Schaber C. (2006), Space Syntax als Werkzeug zur Analyse des Stadtraums und menschlicher Fortbewegung im öffentlichen Raum unter besonderer Berücksichtigung schienengebundener Verkehrssysteme.   Das Beispiel des Leipziger City-Tunnels. Masterarbeit. URL: https://e-pub.uni-weimar.de/opus4/frontdoor/deliver/index/docId/2112/file/SCHABER+2007+-+Space+Syntax+als+Werkzeug_pdfa.pdf
-Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. URL: https://books.google.de/books?id=lJzgxgEACAAJ
-Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
-Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
-Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, URL: http://jasss.soc.surrey.ac.uk/17/3/11.html DOI: 10.18564/jasss.2503
-Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
-Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
+## Referenzen 
+1. Bossel, H, (2004), Systeme, Dynamik, Simulation : Modellbildung, Analyse und Simulation komplexer Systeme. Norderstedt, Books on Demand GmbH.
+1. Feistel,R. & Ebeling, W. (1989), Evolution of Complex Systems. Self-Organization, Entropy and Development. Kluwer, Dordrecht,1989.
+1. Gilbert N. & S. Bankes (2002), Platforms and methods for agent-based modeling. Proc. Natl. Acad.Sci. USA 99. Suppl 3.
+1. Grider, R. and  U. Wilensky, U. (2015). NetLogo Paths model. http://ccl.northwestern.edu/netlogo/models/Paths. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+1. Helbing D., Keltsch & P. Molnar (1997), Modelling the evolution of human trail systems Nature  Vol. 388.
+1. Henderson L.F. /1974), On the fluid mechanics of human crowd motion, Transportation Research, Volume 8, Issue 6, 1974, Pages 509-515, DOI: https://doi.org/10.1016/0041-1647(74)90027-6.
+1. Machado A.: "Campos de Castilla", 1917 zit nach URL: http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm, Zugriff: 28.01.2020
+1. Molnar P. (1995), Modellierung und Simulation der Dynamik von Fußgängerströmen (Diss.), URL: http://www.cis.cau.edu/~pmolnar/dissertation/dissertation.html (Stand: 21.August 2006
+1. Schaber C. (2006), Space Syntax als Werkzeug zur Analyse des Stadtraums und menschlicher Fortbewegung im öffentlichen Raum unter besonderer Berücksichtigung schienengebundener Verkehrssysteme.   Das Beispiel des Leipziger City-Tunnels. Masterarbeit. URL: https://e-pub.uni-weimar.de/opus4/frontdoor/deliver/index/docId/2112/file/SCHABER+2007+-+Space+Syntax+als+Werkzeug_pdfa.pdf
+1. Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. URL: https://books.google.de/books?id=lJzgxgEACAAJ
+1. Teahan T. (2010a), Artificial Intelligence: Exercises – Agents and Environments, Ventus Publishing ApS, ISSBN 978-87-7681-591-2, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-i.pdf, Zugriff: 28.01.2020
+1. Teahan T. (2010b), Artificial Intelligence: Exercises – Agent Behaviour I, Ventus Publishing ApS, ISBN 978-87-7681-592-9, URL: https://library.ku.ac.ke/wp-content/downloads/2011/08/Bookboon/IT,Programming and Web/artificial-intelligence-exercises-ii.pdf, Zugriff: 28.01.2020
+1. Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, URL: http://jasss.soc.surrey.ac.uk/17/3/11.html DOI: 10.18564/jasss.2503
+1. Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
+1. Wilensky, U. (1999). NetLogo. URL: http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL. [↩](#a1)
 @#$#@#$#@
 default
 true
