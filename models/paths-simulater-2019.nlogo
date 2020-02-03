@@ -469,7 +469,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-50.0
+25.0
 1
 1
 NIL
@@ -691,7 +691,7 @@ SWITCH
 138
 max-pop
 max-pop
-1
+0
 1
 -1000
 
@@ -981,19 +981,24 @@ Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze
 
 
 
-### Modelläufe 5 - 7 - Fokussierte Orientierung auf maximalePopularität 
+### Modelläufe 5 - 7 - Fokussierte Orientierung auf maximale Popularität 
 
-In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und Orientierung an der maximal erreichbaren Popularität (siehe Tabelle 1). 
+In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und Orientierung an der maximal erreichbaren Popularität (siehe Tabelle 1). Die Läufe unterscheiden sich recht deutlich von den zuvor gezeigten Simulationen. Während _run\_5 erwartungsgemäß und bedingt durch die Bedingung _walker-vis-dist = 1_  als prinzipiell identisch mit _run\_1_ betrachtet werden kann, weichen die Läufe _run\_5_ und _run\_7_ erheblich von den vergleichbaren _walker-vis-dist_ Simulationen mit nicht optimierter Fokussierung auf maximale Popularität ab. Zunächst zeigen sich wie bei _run\_1_ und _run\_6_ als Hauptmuster eindeutig die linearen Optimierungspfade zwischen den Zielen die entsprechend hohe Popularitätswerte aufweisen. Betrachtet man aber vor allem den _run\_6_ zeigt sich deutlich, dass  wenig oder nur einmalig benutzte Parallel-Pfade zu den optimierten Hauptpfaden entstanden sind. Sehr deutlich ist dies in _run\_6 #1-3_ und _run\_7 #2/#4_ zu erkennen. 
 
-![Modellläufe 5 - 7]( images/run_5-7.png)
+![Modellläufe 5 - 7]( images/abb4.png)
 
 Abbildung 4: Modelllauf 5 -7 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
-
-
-
-
 ## Diskussion
+
+Betrachtet man die Ergebnisse vor dem Hintegrund der gestellten Hypothesen so können folgende Schlüsse gezogen werden: 
+
+Hypothese 1 wurde mit den Modellläufen _run\_1, run\_5, run\_6, run\_7_ untersucht. In _run\_1_  und _run\_5 war die Wahrnehmung maximaler Popularität nicht eingestellt, allerdings wirkt die Wahrnehmungreichweite von 1 der walker im Zusammenhang mit der zu jedem Zeitschritt aktiven Zielausrichtung in vergleichbarer Weise. Die Läufe run\_6_ und _run\_7_  hingegen zeigen eindeutig Lineare Optimierungsmuster die bei mittlerer Wahrnehmungsreichweite deutlicher sichtbar werden als bei höherer Reichweite. Alle Varianten führen zu linearen und falls notwendigen parallelen Wegstrukturen die hinsichtlich der Entfernung optimiert kurz sind. Folgglich kann Hypothese 1 sowohl hinsichtlich der kürze der Wegstrecke als auch der Häufung von Punkt zu Punkt Bedingugnen bestätigt werden
+
+Mit den _run\_3_ und _run\_4_ kann gezeigt werden dass Abhängig von der Anzahl der sichtbaren Trittpatches gekrümmte und breite Wege die hinsichtlich ihrer Distanz nicht optimiert sind ensthen. Ihre Lage im Raum ist offensichtlich von der zufälligen Erstverteilung der Akteure abhängig _run\_3_ und wird mit zunhemender Wahrnehmungsreichweite bzw. Anzahl der Akteure stabiler _run\_4_. Aufgrund dieser Beobachtung kann auch Hypothese 2 bestätigt werden da mit zunehmender Wahrnehmung die Trampelpfade stärker konvergieren und zu gemeinsam genutzten Pfaden mehr Nebenpfaden und weiteren Pfadstrukturen entstehen.
+
+Auf dieser Grundlage kann geschlossen werden dass das vorliegende Modell in der Lage ist, die, auch von anderen Autoren (vgl. Molnar 1997, Helbing 1997) beobachteten, Strukturen zuverlässig wiederzugeben und als Grundlage für weitere Fragestellungen wie etwa Barrieren oder komplexere Raumstrukturen geeignet erscheint.
+
 
 
 ## Referenzen 
@@ -1572,7 +1577,7 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="run_1_2_y" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="run_all" repetitions="5" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
@@ -1593,9 +1598,12 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     </enumeratedValueSet>
     <enumeratedValueSet variable="walker-vision-dist">
       <value value="1"/>
+      <value value="25"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pop">
       <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="pop-lowlimit">
       <value value="1"/>
@@ -1620,6 +1628,7 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     </enumeratedValueSet>
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
+      <value value="&quot;square&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
