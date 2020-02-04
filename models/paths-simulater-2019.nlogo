@@ -1,3 +1,4 @@
+; define turtles
 breed [ walkers walker ]
 
 ; define turtles and patches specific variables
@@ -10,7 +11,6 @@ globals [
   visible-routes
   gini-index-reserve
   lorenz-points
-  popularity-points
 ]
 
 ; setup procedure carried out once
@@ -18,9 +18,11 @@ to setup
   clear-all
   set vis-pop false
   ask patches [ set pcolor green
-  set obstacle 0
-  set popularity 0
+    set obstacle 0
+    set popularity 0
   ]
+
+  ; call the experiment setup procedure
   make-experiment
 
  ; if no experiment is choosen stop
@@ -35,20 +37,26 @@ to setup
   ]
 
   ; finsihed so reset ticks
+  ; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
-   reset-ticks
+  reset-ticks
 end
 
 ; procedure that controls the model run
 ; adapted from the original paths model
 to go
+  ; for runtime scaling and graying the popularity patches
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
-  move-walkers
-  ;update-lorenz-and-gini
 
+  ; main procedure that rules the movement
+  move-walkers
+
+  ; if you want to calculate a lorenz curve you need to uncomment this call
+  ;update-lorenz-and-gini
   tick
 
+  ; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
   ;if ticks = 4000 [
   ;  export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
   ;  export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")
@@ -178,7 +186,8 @@ end
 ; #####################################################
 ; create experiments
 
-; create some static road systems
+; this procedure creates some static road systems
+; road width and geometry typ is defined by the GUI
 to create-roads
    if preset-roads = "triangle" [
    set roads patches with
@@ -205,8 +214,11 @@ to create-roads
 
 end
 
-; create some static and flexible experimental world setups
+; this procedure creates some static road systems
+; geometry is defined by the GUI
 to make-experiment
+
+    ; triangle
     if selected-experiment = "Y" [
     ; not rotated
     ;https://www.triangle-calculator.com/de/?what=vc&a=-40&a1=-40&3dd=3D&a2=0&b=0&b1=29.2825&b2=0&c=40&c1=-40&c2=0&submit=Berechnen&3d=0
@@ -227,6 +239,8 @@ to make-experiment
     ]
 
   ]
+
+  ; pentagle
   if selected-experiment = "houseOfSantaClaus" [
     ask patches with [pcolor = orange] [set pcolor  green]
     ask patches at-points [[-35 10] [-35 -40] [0 40]  [35 10] [35 -40]] [ set pcolor orange]
@@ -239,6 +253,8 @@ to make-experiment
     ]
 
   ]
+
+  ; square
   if selected-experiment = "square" [
     ask patches with [pcolor = orange] [set pcolor  green]
     ask patches at-points [[-35 40] [-35 -40]  [35 40] [35 -40]] [ set pcolor orange]
@@ -250,6 +266,7 @@ to make-experiment
     ]
   ]
 
+  ; a street szenario is choosen and strets are the only places for goals and turles to be born
   if selected-experiment = "s-goal" [
     if preset-roads != "none" [create-roads
       ; create walker and goals on structures (roads)
@@ -274,7 +291,8 @@ to make-experiment
      if message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
     ]
   ]
-  ; if goals are orange
+
+  ; a free goal szenario is choosen (goals MUST be orange)
   if selected-experiment ="o-goal" [
     if preset-roads != "none" [create-roads]
     ask n-of 4 patches with [pcolor = green][set pcolor orange]
@@ -286,78 +304,41 @@ to make-experiment
     ]
     if message [user-message (word "Es wurden vier zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
   ]
-
-
 end
-
-;; procedure to colorize the popularity
-;; a linear approach from lowliomit to current max value is applied
-to   scale-p
-  if ticks > 10 [
-  let pmax max [popularity] of patches
-  ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
-  ;print pmax
-  ask patches with [pcolor != orange and pcolor != green and pcolor != red]
-  [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
-  ]
-end
-
-
-;#########################################################
-
-to paint-p [p]
-  ask p [ set pcolor gray]
-end
-
-to draw-world-items
-  while [mouse-down?] [
-    create-turtles 1 [
-      setxy mouse-xcor mouse-ycor
-      ask patches in-radius line-width [ set pcolor read-from-string p_color
-        if pcolor = red [set obstacle 1
-                         set streets 0]
-        if pcolor = gray [set obstacle 0
-                         set streets  1
-                         set popularity roads-pop
-        set popularity roads-pop]
-        if pcolor = green [set obstacle 0
-                         set streets  0
-                         set popularity 0]
-      ]
-      die
-    ]
-    display
-  ]
-end
-
 
 ;#########################################################
 ; reporter for analysis
+
+; reports number of gray patches
 to-report trampling
   report  count patches  with [popularity >= pop-lowlimit]
 end
 
+; reports number of patches with the pop-lowlimit value
 to-report popularity-minimum
   report  count patches  with [popularity = pop-lowlimit  ]
 end
 
+; reports teh average popularity value of all patches
 to-report popularity-average
 let psum sum [popularity] of patches with [popularity >= pop-lowlimit]
 let pcount count patches with [popularity >= pop-lowlimit]
 report psum / pcount
 end
 
+;reports the maximum value of popularity
 to-report popularity-maximum
 let psum sum [popularity] of patches with-max [popularity]
 let pcount count patches with-max [popularity]
   report psum / pcount
 end
 
+; reports the Gini Coefficient
 to-report gini-05
   report  gini-index-reserve / trampling
 end
 
-
+; calls the help text not implemented yet
 to help
  clear-all
   import-drawing "images/help.png"
@@ -394,6 +375,51 @@ end
 to-report spop
   report sort [popularity] of patches with [popularity >=  pop-lowlimit]
 end
+
+
+;; procedure to colorize the popularity
+;; a linear approach from lowliomit to current max value is applied
+to   scale-p
+  if ticks > 10 [
+  let pmax max [popularity] of patches
+  ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
+  ;print pmax
+  ask patches with [pcolor != orange and pcolor != green and pcolor != red]
+  [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
+  ]
+end
+
+
+;#########################################################
+
+
+to paint-p [p]
+  ask p [ set pcolor gray]
+end
+
+; provides an simple way to draw new facilities
+to draw-world-items
+  while [mouse-down?] [
+    create-turtles 1 [
+      setxy mouse-xcor mouse-ycor
+      ask patches in-radius line-width [ set pcolor read-from-string p_color
+        if pcolor = red [set obstacle 1
+                         set streets 0]
+        if pcolor = gray [set obstacle 0
+                         set streets  1
+                         set popularity roads-pop
+        set popularity roads-pop]
+        if pcolor = green [set obstacle 0
+                         set streets  0
+                         set popularity 0]
+      ]
+      die
+    ]
+    display
+  ]
+end
+
+
 
 ; Copyright 2015 Uri Wilensky.
 ; See Info tab for full copyright and license.
@@ -1049,7 +1075,7 @@ Auf Grundlage dieser Beobachtungen kann geschlossen werden, dass das vorliegende
 1. Helbing D., Keltsch & P. Molnar (1997), Modelling the evolution of human trail systems Nature  Vol. 388.
 1. Henderson L.F. /1974), On the fluid mechanics of human crowd motion, Transportation Research, Volume 8, Issue 6, 1974, Pages 509-515  [DOI](https://doi.org/10.1016/0041-1647(74)90027-6).
 1. <sup>*</sup> Machado A.: "Campos de Castilla", 1917, zit nach [URL](http://falschzitate.blogspot.com/2018/04/wege-entstehen-dadurch-dass-wir-sie.htm), Zugriff: 28.01.2020
-1.Luhmann, N., (1984), Soziale Systeme: Grundriß einer allgemeinen Theorie, Frankfurt, Suhrkamp
+1. Luhmann, N., (1984), Soziale Systeme: Grundriß einer allgemeinen Theorie, Frankfurt, Suhrkamp
 1. Molnar P. (1995), Modellierung und Simulation der Dynamik von Fußgängerströmen (Diss.), [URL](http://www.cis.cau.edu/~pmolnar/dissertation/dissertation.html)
 1. Schaber C. (2006), Space Syntax als Werkzeug zur Analyse des Stadtraums und menschlicher Fortbewegung im öffentlichen Raum unter besonderer Berücksichtigung schienengebundener Verkehrssysteme.   Das Beispiel des Leipziger City-Tunnels. Masterarbeit. [URL](https://e-pub.uni-weimar.de/opus4/frontdoor/deliver/index/docId/2112/file/SCHABER+2007+-+Space+Syntax+als+Werkzeug_pdfa.pdf), Zugriff: 28.01.2020
 1. Schenk M. (1999), Optimierungsprinzipien der menschlichen Fortbewegung. [URL](https://books.google.de/books?id=lJzgxgEACAAJ)Zugriff: 28.01.2020
