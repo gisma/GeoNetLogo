@@ -1,4 +1,3 @@
-; create turtles as "breed" means a agentset of turtles with the name "walker"
 breed [ walkers walker ]
 
 ; define turtles and patches specific variables
@@ -469,17 +468,17 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-25.0
+50.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-5
-280
-115
-313
+10
+335
+120
+368
 show-goal
 show-goal
 1
@@ -488,9 +487,9 @@ show-goal
 
 CHOOSER
 10
-590
+435
 140
-635
+480
 p_color
 p_color
 "red" "orange" "grey" "green"
@@ -498,9 +497,9 @@ p_color
 
 BUTTON
 10
-640
+485
 140
-680
+525
 NIL
 draw-world-items
 T
@@ -514,10 +513,10 @@ NIL
 1
 
 SLIDER
-12
-555
-142
-588
+10
+400
+140
+433
 line-width
 line-width
 0.2
@@ -559,10 +558,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-230
-280
-340
-313
+235
+335
+345
+368
 vis-vision
 vis-vision
 1
@@ -570,10 +569,10 @@ vis-vision
 -1000
 
 TEXTBOX
-5
-255
-460
-291
+10
+310
+465
+346
 -----------------------------------------Visualisation-------------------------------
 15
 0.0
@@ -581,19 +580,19 @@ TEXTBOX
 
 TEXTBOX
 -5
-535
-450
-561
-----------------DRAW----------------
+380
+165
+406
+----------------DRAW---------------
 12
 0.0
 1
 
 MONITOR
-465
-545
-585
-586
+470
+535
+590
+576
 Zahl l pop > lowlimit
 trampling
 0
@@ -626,10 +625,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-120
-280
-230
-313
+125
+335
+235
+368
 message
 message
 1
@@ -657,10 +656,10 @@ TEXTBOX
 1
 
 BUTTON
-320
-680
-440
-713
+335
+490
+455
+523
 NIL
 help
 NIL
@@ -674,13 +673,13 @@ NIL
 1
 
 SWITCH
-345
-280
-455
-313
+350
+335
+460
+368
 vis-pop
 vis-pop
-0
+1
 1
 -1000
 
@@ -718,10 +717,10 @@ roads-pop
 Number
 
 MONITOR
-465
-635
-585
-676
+470
+625
+590
+666
 average popularity
 popularity-average
 0
@@ -729,10 +728,10 @@ popularity-average
 10
 
 MONITOR
-465
-680
-585
-721
+470
+670
+590
+711
 max-popularity
 popularity-maximum
 0
@@ -740,10 +739,10 @@ popularity-maximum
 10
 
 MONITOR
-465
+470
+580
 590
-585
-631
+621
 Zahl min pop
 popularity-minimum
 0
@@ -752,9 +751,9 @@ popularity-minimum
 
 PLOT
 615
-545
-985
-720
+535
+975
+710
 number of patches per percentile
 Percentile
 Count
@@ -786,10 +785,10 @@ NIL
 1
 
 BUTTON
-320
-640
-440
-673
+335
+450
+455
+483
 Remove walkers
 die
 NIL
@@ -802,6 +801,50 @@ NIL
 NIL
 1
 
+BUTTON
+205
+490
+325
+523
+rescale pop
+let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+205
+450
+325
+483
+drop lowlim pop
+\n   let llim patches  with [popularity <= pop-lowlimit]\n   ask llim with [pcolor != orange and pcolor != red][set pcolor green]\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+TEXTBOX
+250
+380
+460
+406
+----------------Helpers---------------
+12
+0.0
+1
+
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
 
@@ -809,22 +852,22 @@ Rieke Ammoneit und Chris Reudenbach 2020
 
 ## Einleitung
 
-Räumlich agiernde Akteure müssen ebendiese Räume nutzen und erschließen. Geschieht diese Nutzung regelmäßig entstehen Wege. diese erleichtern und optimieren, sei es operationalisiert in Form von Strassen und befestigten Wegen oder ungeregelt als Trampelpfade, Steige o.ä. die Nutzung des erdgebundenen Raumes. Wo es keine regelhafte Infrastruktur gibt geschieht dies durch gemeinschaftliche Nutzung oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917].
+Räumlich agiernde Akteure müssen eben diese Räume nutzen und erschließen. Geschieht diese Nutzung regelmäßig entstehen Wege. Diese erleichtern und optimieren, sei es operationalisiert in Form von Strassen und befestigten Wegen oder ungeregelt als Trampelpfade, Steige o.ä., die Nutzung des erdgebundenen Raumes. Wo es keine regelhafte Infrastruktur gibt, geschieht dies durch gemeinschaftliche Nutzung oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917].
 
 Folgt man Helbig (Helbing 1997) gibt es über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung ein breites Interesse an einem vertieften Verständis dieses Prozesses. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung kann theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet werden (Luhmann 1984). Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs und seinen Bewegungsabsichten mit einem gegebenen Raum.
 
-Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als _gute_ Wege sollen in diesem Kontext Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind regulär solche Wege nicht verfügbar, oder werden als nicht nützlich empfunden, enstehen häufig _wilde_ Wege also **Trampelpfade**, da Akteure diese Wege nutzen und durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken diese zu einem Weg stabilisieren. 
+Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als _gute_ Wege sollen in diesem Kontext Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind regulär solche Wege nicht verfügbar oder werden als nicht nützlich empfunden, enstehen häufig _wilde_ Wege also **Trampelpfade**, da Akteure diese Wege nutzen und durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken diese zu einem Weg stabilisieren. 
 
 In der vorliegenden Studie soll die spontane Entstehung von Trampelpfaden in einem einfachen isomorphen Raum untersucht werden. Insbsondere ob und inwieweit die Anazhl und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster haben. Hierzu sind insbesondere Modellsysteme wie NetLogo geeignet, da sie einen einfachen softwarebasierten Zugang zur Programmierung Und Validierung agentenbasierter Prozesse im Raum bieten (Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999).
 
 ## Fragestellung und Hypothese
-Die einleitend dagestellte, grundlegende  Beobachtung, dass Trampelpfade entlang gemeinsam zurückgelegter Routen selbstorganisert entstehen wird durch die Neigung begründet, Wege zwischen einem _Hier_ und  _Dort_ zu optimieren. Es wird zudem beobachtet, dass weitere Akteure, sobald solche Spuren sichtbar sind, dazu neigen diese  zu nutzen was wierderum die Sichtbarkeit der Trittspuren erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden dann Trampelpfade die scheinbar spezifischen Regeln folgen. Die konkrete Frage dieser Untersuchung lautet also: Entstehen  Wege aus der Neigung der Nutzer bereits sichtbare Trittmuster zu nutzen und inwieweit ist es von der Wahrnemung der Nutzer abhängig wie die Struktur der Wege ist?
+Die einleitend dagestellte, grundlegende  Beobachtung, dass Trampelpfade entlang gemeinsam zurückgelegter Routen selbstorganisert entstehen wird durch die Neigung begründet, Wege zwischen einem _Hier_ und  _Dort_ zu optimieren. Es wird zudem beobachtet, dass weitere Akteure, sobald solche Spuren sichtbar sind, dazu neigen diese  zu nutzen, was wierderum die Sichtbarkeit der Trittspuren erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden dann Trampelpfade die scheinbar spezifischen Regeln folgen. Die konkrete Frage dieser Untersuchung lautet also: Entstehen Wege aus der Neigung der Nutzer bereits sichtbare Trittmuster zu nutzen und inwieweit ist es von der Wahrnehmung der Nutzer abhängig wie die Struktur der Wege ist?
 
 Zur Untersuchung werden folgende Hypothesen aufgestellt:
 
-1. Je höher die wahrnehmbare Popularität eines Trampelpfadpatches ist desto (1) kürzer sind die Verbindungen zwischen Zielen, (2) desto mehr direkte Punkt zu Punkt Wege enstehen und desto weniger Trampelpfadpatches entstehen.
+1. Orientieren sich die Akteure an der Höhe der Popularität eines Trampelpfadpatches, dann (1) sind die Verbindungen zwischen Zielen kürzer, (2) es entstehen mehr direkte Punkt zu Punkt Wege und es entstehen weniger Trampelpfadpatches als bei der Orientierung an beliebigen Trampelpfadpatches. 
 
-2. Je weitreichender die Wahrnehmung der Akteure ist desto desto (1) stärker konvergieren Wege zu gemeinsam genutzten Pfaden mit (2) insgesamt mehr Nebenpfaden und (3) mehr Trampelpfadpatches als unter (1)
+2. Je weitreichender die Wahrnehmung der Akteure ist, desto (1) stärker konvergieren Wege zu gemeinsam genutzten Pfaden mit (2) insgesamt mehr Nebenpfaden und (3) mehr Trampelpfadpatches als unter (1)
 
 ## Methoden
 Zur Abstraktion und Modellbildung wird aus obiger Fragestellung folgendes **Wortmodell** aufgestellt (Bossel 2004):
@@ -832,14 +875,14 @@ Zur Abstraktion und Modellbildung wird aus obiger Fragestellung folgendes **Wort
     "Bei zufällig gegebenen festen Zielen in einem isomorphen Raum wird auf einer
      approximativ linearen (direkten) Verbindung zwischen diesen Zielen durch wiederholte
      Benutzung der gleichen Trittpatches ein Trampelpfad enstehen. Dieser direkte Weg
-     wird modifiziert falls die Neigung der Akteure bereits existierende Wegstücke auf
-     Weg zum Ziel zu nutzen zunimmt. Je mehr dieser Wegstücke verfügbar sind und
+     wird modifiziert, falls die Neigung der Akteure bereits existierende Wegstücke auf
+     dem Weg zum Ziel zu nutzen zunimmt. Je mehr dieser Wegstücke verfügbar sind und
      eingesehen werden können, desto stäker wird eine Veränderung der geraden Wege zu
-     eher bogenförmig oder gekrümmten Wegen stattfinden"
+     eher bogenförmig oder gekrümmten Wegen stattfinden."
 
 ### Rahmenbedingungen des Modelllaufs
 
-Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite, und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Bei Anwendung einer systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen in definierter Anzahl wiederholt. Erwartet wird, dass zu den jeweiligen Paramterkombinationen spezifische und vegleichbare Raumstrukturen entstehen.
+Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Bei Anwendung einer systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen in definierter Anzahl wiederholt. Erwartet wird, dass zu den jeweiligen Paramterkombinationen spezifische und vegleichbare Raumstrukturen entstehen.
 
 ### Ziele und  Raum
 Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf einer isomorphen Fläche (grün) leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) gebildet (siehe Abbildung 1).
@@ -863,13 +906,13 @@ Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
 #### Folgende Interaktion (Prozesse) finden statt:
 
-* Die Anzihungskraft (_popularity_) einer Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt aufgewertet. Ab einem definierten Schwellwert der _popularity_ wird aus Grünland eine sichtbare Trittspur.
+* Die Anziehungskraft (_popularity_) einer Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt aufgewertet. Ab einem definierten Schwellwert der _popularity_ wird aus Grünland eine sichtbare Trittspur.
 
 
 ### Das Netlogo Modell 
-Das entwickelte NetLogo Modell  _"paths-simulater-2019"_  ist eine Weiterentwicklung des NetLogo-Library-Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerehalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus das in Abbildung 1 gezeigte Ziel-Szenario _Y_ in Anlehnung an Helbing (1997) Raumsetting implementiert und verwendet (vgl. Abbildung 1). 
+Das entwickelte NetLogo Modell  _"paths-simulater-2019"_  ist eine Weiterentwicklung des NetLogo-Library-Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerhalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus das in Abbildung 1 gezeigte Ziel-Szenario _Y_ in Anlehnung an Helbing (1997) Raumsetting implementiert und verwendet (vgl. Abbildung 1). 
 
-Zur praktischen Umsetzung wird das Behaviour-Space-Werkzeug der NetLogo Programmierumgebung verwendet. Die in diese Modelldatei integrierten Behaviour-Space Skripte _"run_1_2_Y"_, _"run_3_4_Y"_ und _"run_5-7_Y"_ starten insgesamt 50 Modelläufe, die die Grundlage der Untersuchung darstellen. (vgl. Tabelle 1).
+Zur praktischen Umsetzung wird das Behaviour-Space-Werkzeug der NetLogo Programmierumgebung verwendet. Die in diese Modelldatei integrierten Behaviour-Space Skripte _"run_1_2_Y"_, _"run_3_4_Y"_ und _"run_5-7_Y"_ starten insgesamt 35 Modelläufe, die die Grundlage der Untersuchung darstellen. (vgl. Tabelle 1).
 
 Die Simulationen werden je Szenario in 5-facher Wiederholung mit je zehn zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den ebenfalls jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine Neulosung des nächsten Zieles. Für die genauen Einstellung je Simulation sei auf den Behaviour Space verwiesen.
 
@@ -924,7 +967,7 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
 ## Ergebnisse 
 Die Simulationsläufe wurden über 2500 Zeitschritte iteriert und dann abgebrochen. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
 
-Da in _run\_1 und _run\_2_ gut erkennbar ist dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind werden exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt. Dies vernachlässigt die Beobachtung, dass bei wenigen Akteuren und einer eingeschränkten Sicht (siehe _run\_3_) zwar qualitativ ähnliche und vergleichbare Muster  enstehen diese jedoch in der endgültigen Ausprägung und vor allem räumlichen Lage sehr varierend sind. Dieser räumliche Effekt ist der initialen Verteilung der Akteure geschuldet und es darf angenommen werden dass bei einer gleichmässigen Verteilung im Raum die Muster auch für Läufe mit eingeschränkterer Wahrnehmung räumlich stabil bleiben.  
+Da in _run\_1 und _run\_2_ gut erkennbar ist, dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind, werden exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt. Dies vernachlässigt die Beobachtung, dass bei wenigen Akteuren und einer eingeschränkten Sicht (siehe _run\_3_) zwar qualitativ ähnliche und vergleichbare Muster enstehen, diese jedoch in der endgültigen Ausprägung und vor allem räumlichen Lage sehr varierend sind. Dieser räumliche Effekt ist der initialen Verteilung der Akteure geschuldet und es darf angenommen werden, dass bei einer gleichmässigen Verteilung im Raum die Muster auch für Läufe mit eingeschränkterer Wahrnehmung räumlich stabil bleiben.  
 
 ### Modelläufe 1 und 2 - Fokussierte Orientierung
 
@@ -934,7 +977,7 @@ In Abbildungspanel 2 sind _run\_1_ und _run\_2_ (vgl. Tabelle 1) dargestellt. Be
 
 Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
-Die schwarz visualisierten Patches weisen eine Betretunghäufigkeit gleich des _min-poplimit_-Schwellenwertes aus. Sie markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorausgesetzt) erwartet werden dass dieser Anteil im Verhältnis zu den patches mit einer _popularity_ größer des _min-poplimit_-Schwellenwertes sich über viele Simulationen stabilisiert und ähnlich ist. Allerdings ist auch hier die Abhängigkeit von der initialen räumlichen Verteilung der Akteure ersichtlich. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
+Die schwarz visualisierten Patches weisen eine Betretunghäufigkeit gleich des _min-poplimit_-Schwellenwertes aus. Sie markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorausgesetzt) erwartet werden, dass dieser Anteil im Verhältnis zu den patches mit einer _popularity_ größer des _min-poplimit_-Schwellenwertes sich über viele Simulationen stabilisiert und ähnlich ist. Allerdings ist auch hier die Abhängigkeit von der initialen räumlichen Verteilung der Akteure ersichtlich. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
 
 Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ (pop-ratio)
 
@@ -980,7 +1023,7 @@ Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze
 
 ### Modelläufe 5 - 7 - Fokussierte Orientierung auf maximale Popularität 
 
-In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und ihrer Orientierung an Patches mit einer *maximalen* Popularität (siehe Tabelle 1). Die Läufe unterscheiden sich recht deutlich von den zuvor gezeigten Simulationen. Während _run\_5 erwartungsgemäß und bedingt durch die Bedingung _walker-vis-dist = 1_  als prinzipiell identisch mit _run\_1_ betrachtet werden kann, weichen die Läufe _run\_5_ und _run\_7_ erheblich von den vergleichbaren _walker-vis-dist_-Simulationen mit nicht optimierter Fokussierung auf maximale Popularität ab. Zunächst zeigen sich wie bei _run\_1_ und _run\_6_ als Hauptmuster eindeutig die linearen Optimierungspfade zwischen den Zielen die entsprechend hohe Popularitätswerte aufweisen. Betrachtet man aber vor allem den _run\_6_ zeigt sich, dass  wenig oder nur einmalig benutzte Parallel-Pfade zu den optimierten Hauptpfaden entstanden sind. Sehr stark trittdies in _run\_6 #1-3_ und _run\_7 #2/#4_ hervor. 
+In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und ihrer Orientierung an Patches mit einer *maximalen* Popularität (siehe Tabelle 1). Die Läufe unterscheiden sich recht deutlich von den zuvor gezeigten Simulationen. Während _run\_5 erwartungsgemäß und bedingt durch die Bedingung _walker-vis-dist = 1_  als prinzipiell identisch mit _run\_1_ betrachtet werden kann, weichen die Läufe _run\_5_ und _run\_7_ erheblich von den vergleichbaren _walker-vis-dist_-Simulationen mit nicht optimierter Fokussierung auf maximale Popularität ab. Zunächst zeigen sich wie bei _run\_1_ und _run\_6_ als Hauptmuster eindeutig die linearen Optimierungspfade zwischen den Zielen die entsprechend hohe Popularitätswerte aufweisen. Betrachtet man aber vor allem den _run\_6_ zeigt sich, dass  wenig oder nur einmalig benutzte Parallel-Pfade zu den optimierten Hauptpfaden entstanden sind. Sehr stark tritt dies in _run\_6 #1-3_ und _run\_7 #2/#4_ hervor. 
 
 ![Modellläufe 5 - 7]( images/abb4.png)
 
@@ -990,11 +1033,11 @@ Abbildung 4: Modelllauf 5 -7 für die Einstellungen siehe Tabelle 1. Schwarze Pa
 
 Betrachtet man die Ergebnisse vor dem Hintergrund der gestellten Hypothesen so können folgende Schlüsse gezogen werden: 
 
-Hypothese 1 wurde mit den Modellläufen _run\_1, run\_5, run\_6, run\_7_ untersucht. In _run\_1_  und _run\_5 war die Wahrnehmung maximaler Popularität nicht eingestellt, allerdings wirkt die Wahrnehmungreichweite von **1** der walker, im Zusammenhang mit der zu jedem Zeitschritt aktiven Zielausrichtung, in vergleichbarer Weise. Die Läufe run\_6_ und _run\_7_  hingegen zeigen eindeutig lineare Optimierungsmuster, die bei mittlerer Wahrnehmungsreichweite deutlicher sichtbar werden als bei höherer Reichweite. Alle Varianten führen zu linearen und, falls für das Optimioerungsverhalten notwendig, parallelen Wegstrukturen, die hinsichtlich der Entfernung optimiert kurz sind, auf. Folglich kann Hypothese 1 sowohl hinsichtlich der Kürze der Wegstrecke als auch der Häufung von direkten Punkt-zu-Punkt Wegen bestätigt werden
+Hypothese 1 wurde mit den Modellläufen _run\_1, run\_5, run\_6, run\_7_ untersucht. In _run\_1_  und _run\_5 war die Wahrnehmung maximaler Popularität nicht eingestellt, allerdings wirkt die Wahrnehmungreichweite von **1** der walker, im Zusammenhang mit der zu jedem Zeitschritt aktiven Zielausrichtung, in vergleichbarer Weise. Die Läufe run\_6_ und _run\_7_  hingegen zeigen eindeutig lineare Optimierungsmuster, die bei mittlerer Wahrnehmungsreichweite deutlicher sichtbar werden als bei höherer Reichweite. Alle Varianten führen zu linearen und, falls für das Optimierungsverhalten notwendig, parallelen Wegstrukturen, die hinsichtlich der Entfernung optimiert kurz sind. Folglich kann Hypothese 1 sowohl hinsichtlich der Kürze der Wegstrecke als auch der Häufung von direkten Punkt-zu-Punkt Wegen bestätigt werden
 
 Mit den Läufen _run\_3_ und _run\_4_ kann gezeigt werden, dass abhängig von der Anzahl der für die Akteure sichtbaren Trittpatches, gekrümmte und breitere Wege entstehen. Diese Wege sind nicht hinsichtlich ihrer Distanz zwischen den Zielpunkten optimiert. Ihre Lage im Raum ist offensichtlich von der zufälligen Erstverteilung der Akteure abhängig (_run\_3_) und wird mit zunehmender Wahrnehmungsreichweite bzw. Anzahl der Akteure stabiler reproduzierbar (_run\_4_). Aufgrund dieser Beobachtung kann auch Hypothese 2 bestätigt werden, da mit zunehmender Wahrnehmung die Trampelpfade stärker konvergieren und zu gemeinsam genutzten Pfaden, zusätzlichen Nebenpfaden und weiteren Pfadstrukturen ausgebaut werden.
 
-Auf Grundlage dieser Beobachtungen kann geschlossen werden dass das vorliegende Modell in der Lage ist, die, auch von anderen Autoren (vgl. Molnar 1997, Helbing 1997) beobachteten, Strukturen zuverlässig wiederzugeben und als Grundlage für weitere Fragestellungen wie etwa Barrieren oder komplexere Raumstrukturen geeignet erscheint.
+Auf Grundlage dieser Beobachtungen kann geschlossen werden, dass das vorliegende Modell in der Lage ist, die, auch von anderen Autoren (vgl. Molnar 1997, Helbing 1997) beobachteten, Strukturen zuverlässig wiederzugeben und als Grundlage für weitere Fragestellungen wie etwa Barrieren oder komplexere Raumstrukturen geeignet erscheint.
 
 
 
