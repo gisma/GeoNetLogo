@@ -1,25 +1,31 @@
-# Geographie  als räumliche Interpretation der Welt
+# Geography as a spatial interpretation of the world
 
-##  Kursziele
+## Course objectives
 
-In dieser Übung soll folgende Inhalte erarbeitet werden:
-* Die Fähigkeit geographische Modellierung zu verstehen, anzuwenden und zu interpretieren
-* Die Fähigkeit raum-zeitlich zu beobachten und diese Beobachtungen zu vereinfachen um zu allgemeingültigen Aussagen zu formen
-* Das Integration von Forschungsergebnissen in die eigene Beobachtung und Abstraktionsleitung 
-* Die Fertigkeit diese Abstraktion mit einem geeigneten Softwarewerkzeug abzubilden
-
-
-## Von der Idee zum Modell
-Das Ableiten wissenschaftlicher Konzepte, bzw. allgemeiner Ideen in eine angemessene Modellstruktur ist ein komplexer und nicht schematisch zu erlernender Vorgang. Die Zusammenhänge der realen Welt in der Regel so komplex, dass sie nur in einer generalisierten Form verständlich darstellbar oder analysierbar sind. Schon im Alltag konstruieren wir kontinuierlich sogenannte mentale oder kognitive Modelle zur Vereinfachung unserer Weltwahrnehmung (Rasch 2006). Dieser Umstand ist auch in den Wissenschaften bekannt. So notiert der Physiker Bridgman 1927: " believe that the model is a useful and indeed unescapable tool of thought, in that it enables us to think about the unfamiliar in terms of the familiar" (Bridgman 1927), während 1972 der Modellierer Rivet schlicht behauptet: "The History of mankind is the history of model building." (Rivett 1972).
-
-Die Perzeption und Interpretation der „realen Welt“ sowie die Entwicklung geeigneter Strategien für den praxistauglichen Umgang mit dieser Welt, findet mit dem Hilfsmittel der Abstraktion und Kommunikation ( = Modellbildung) statt. Die Strategien der Abstraktion sind widerstreitend und vielfältig, da Kontextabhängigkeit und Zielsetzung des Abstrahierenden einen wesentlichen Einfluss auf die Resultate ausüben ("Methode Götterblick" s.a. Eckmüllner 2007). Das heißt die gewählte Abstraktion der (räumlichen) Welt ist, wissenschaftlich betrachtet, bestenfalls nachvollziehbar und transparent aber niemals wahr. Auch garantiert die logische Validität der Abstraktion weder die Gültigkeit abgeleiteter noch allgemeiner Aussagen. Ob das konstruierte Modell der Wirklichkeit entspricht, also richtig ist, lässt sich daher nicht beweisen. Bestenfalls lässt sich die Gültigkeit für den definierten Zweck nachweisen, nie aber Wahrheit (Bossel 2004).
-Prinzipiell kann man das Erlernen und Implementierenden von Werkzeugen zur Implementierung von Modellkonzepten in bottom up bzw. top down Ansätze unterscheiden. Als bottom up Ansatz kann das schrittweise Erlernen der Modellierungssprache (in diesem Kurs Netlogo) durch Implementierung konzeptioneller Modellideen (z.B. positive oder negative Rückkopplungsschemata etc.) bezeichnet werden. Dieser Ansatz hat den Vorzug, schrittweise elementare Bausteine zur Verfügung zu stellen um so dann zu guter Letzt auch komplexere Modelle erstellen und verstehen zu können. Er ist mit dem konventionellen Ansatz eine Fremdsprache durch systematisches Lernen von Vokabel und Grammatik zu erlernen vergleichbar.
-
-Der umgekehrte Weg top down hingegen verfolgt eher den Ansatz „Spring ins kalte Wasser und schwimm' (oder geh' unter)“ oder um beim zuvor angeführten Beispiel zu bleiben, dem Erlernen einer Fremdsprache durch sprechen und interagieren in dieser Sprache von Beginn an.
-Beide Konzepte haben didaktisch und pragmatisch bekanntermaßen Vor- und Nachteile. In unserem Fall ist der Versuch mit einem existierenden recht komplexen Modell zu beginnen, der Erfahrung geschuldet, dass mit dem bottom up Ansatz unverhältnismäßig viel Zeit benötigt wird um erste inhaltlich auch nur einigermaßen interessante Modelle verstehen und entwickeln zu können.
-Für die geographische Lehrpraxis erscheint mir ein kombinierter Ansatz von bottom up und top down als ein geeigneter Weg um effizient sowohl die inhaltlichen wie technischen Kompetenzen zu erwerben. Daher wird im zweiten Übungsteil auch intensiv der bottom up Ansatz verfolgt.
+In this exercise the following contents are to be worked out:
+* The ability to understand, apply and interpret geographical modelling
+* The ability to observe spatio-temporally and to simplify these observations to form general statements
+* The integration of research results into one's own observation and abstraction management 
+* The ability to map this abstraction with a suitable software tool
 
 
+## From idea to model
+The derivation of scientific concepts or general ideas into an appropriate model structure is a complex process that cannot be learned schematically. The interrelationships of the real world are usually so complex that they can only be presented or analysed in a generalised form in a comprehensible way. Already in everyday life we continuously construct so-called mental or cognitive models to simplify our perception of the world (Rasch 2006). This fact is also known in the sciences. For example, the physicist Bridgman noted in 1927: " believe that the model is a useful and indeed unescapable tool of thought, in that it enables us to think about the unfamiliar in terms of the familiar" (Bridgman 1927), while in 1972 the modeller Rivet simply claimed: "The History of mankind is the history of model building. (Rivett 1972).
+
+The perception and interpretation of the "real world" and the development of suitable strategies for dealing with this world in a practical way is done with the aid of abstraction and communication ( = model building). The strategies of abstraction are conflicting and diverse, since contextual dependency and the objective of the abstracting person exert a significant influence on the results ("Methode Götterblick" see also Eckmüllner 2007). This means that the chosen abstraction of the (spatial) world is, from a scientific point of view, at best comprehensible and transparent but never true. Also the logical validity of the abstraction does not guarantee the validity of derived or general statements. Whether the constructed model corresponds to reality, i.e. is correct, can therefore not be proven. At best, validity for the defined purpose can be proven, but never truth (Bossel 2004).
+In principle, one can distinguish between learning and implementing tools for implementing model concepts in bottom up and top down approaches. A bottom up approach can be described as the step-by-step learning of the modeling language (in this course Netlogo) by implementing conceptual modeling ideas (e.g. positive or negative feedback schemes etc.). This approach has the advantage of providing elementary building blocks step by step in order to create and understand more complex models. It is comparable to the conventional approach of learning a foreign language by systematically learning vocabulary and grammar.
+
+The opposite way top down, however, is more like "jump in the cold water and swim (or go under)" or, to stay with the example above, learning a foreign language by speaking and interacting in this language from the beginning.
+Both concepts have didactic and pragmatic advantages and disadvantages. In our case, the attempt to start with an existing, rather complex model is based on the experience that the bottom-up approach requires a disproportionate amount of time to understand and develop models that are interesting in terms of content.
+For geographic teaching practice, a combined bottom up and top down approach seems to me to be a suitable way to efficiently acquire both content and technical skills. Therefore, the bottom up approach is intensively pursued in the second part of the exercise.
 
 
+Bossel, H., 2004. Systeme, Dynamik, Simulation – Modellbildung, Analyse und Simulation komplexer Systeme. Norderstedt/Germany: Books on Demand.Norderstedt/Germany, 2004
 
+Bridgman, P.W., 1927. The Logic of Modern Physics. New york: Macmillan . 
+
+Eckmüllner, O., 2007. Götterblick – oder was?. Östereichische Forstzeitung, 11, 16. 
+
+Rasch, T., 2006. Verstehen abstrakter Sachverhalte: Semantische Gestalten in der Konstruktion mentaler Modelle . Berlin: Wissenschaftlicher Verlag. 
+
+Rivett, P., 1972. Principles of model building. The construction of models for decision analysis. London: Wiley. 
