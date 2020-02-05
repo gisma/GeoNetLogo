@@ -94,10 +94,10 @@ end
 to move-walkers
   ask walkers [
     if patch-here = goal [
-      if selected-experiment = "s-goal" [set goal one-of patches with [streets = 1]
+      if selected-experiment = "street-goals" [set goal one-of patches with [streets = 1]
       if show-goal [   ask goal [set pcolor yellow] ]
       ]
-      if selected-experiment ="o-goal"
+      if selected-experiment ="orange-goals"
       or selected-experiment ="Y"
        or selected-experiment ="square"
        or selected-experiment ="houseOfSantaClaus" [set goal one-of patches with [pcolor = orange]]
@@ -287,12 +287,12 @@ to make-experiment
   ]
 
   ; a street szenario is choosen and strets are the only places for goals and turles to be born
-  if selected-experiment = "s-goal" [
+  if selected-experiment = "street-goals" [
     if preset-roads != "none" [create-roads
       ; create walker and goals on structures (roads)
       ask  n-of n-walker roads [
-        sprout-walkers 1 [ if selected-experiment = "s-goal" [set goal one-of patches with [streets = 1]]
-          if show-goal [ask goal [set pcolor yellow]]
+        sprout-walkers 1 [set goal one-of patches with [streets = 1]
+        if show-goal [ask goal [set pcolor yellow]]
         set size 4
         set color 45
         set shape "person student"
@@ -313,11 +313,11 @@ to make-experiment
   ]
 
   ; a free goal szenario is choosen (goals MUST be orange)
-  if selected-experiment ="o-goal" [
+  if selected-experiment ="orange-goals" [
     if preset-roads != "none" [create-roads]
     ask n-of 4 patches with [pcolor = green][set pcolor orange]
     ask  n-of n-walker patches [sprout-walkers 1 [
-    if selected-experiment ="o-goal" [set goal one-of patches with [pcolor = orange]]
+    set goal one-of patches with [pcolor = orange]
       set size 4
       set color 45
       set shape "person student"]
@@ -334,6 +334,7 @@ end
 to-report stopitnow
   let stopit false
   let resolution abs(min-pxcor) + abs(max-pxcor)
+
   if old-gray-patches = count-of-trampling and  ticks > (n-walker * 0.75 * resolution ) [set stopit true]
   report stopit
 end
@@ -671,7 +672,7 @@ CHOOSER
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
-3
+0
 
 SLIDER
 15
@@ -695,7 +696,7 @@ SWITCH
 383
 message
 message
-1
+0
 1
 -1000
 
@@ -706,8 +707,8 @@ CHOOSER
 75
 selected-experiment
 selected-experiment
-"none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
-1
+"none" "orange-goals" "street-goals" "Y" "houseOfSantaClaus" "square"
+0
 
 TEXTBOX
 10
