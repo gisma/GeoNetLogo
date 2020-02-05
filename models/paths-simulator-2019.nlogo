@@ -264,7 +264,7 @@ to make-experiment
     ask walkers [set color black]
   ]
 
-  ; pentagle
+  ; pentagon
   if selected-experiment = "houseOfSantaClaus" [
     ask patches with [pcolor = orange] [set pcolor  green]
     ask patches at-points [[-35 10] [-35 -40] [0 40]  [35 10] [35 -40]] [ set pcolor orange]
