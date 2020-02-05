@@ -1,3 +1,8 @@
+; Base model is copyrighted 2015 Grider, R. and U. Wilensky.
+; Used model snippets are from voronoi, mouse example, vision cone example, wealth distribution Copyright all U. Wilensky
+; Copyright for enhancing and compiling the model and the Info Text: Rieke Ammoneit & Chris Reudenbach 2020
+; See Info tab for more copyright and license.
+
 ; there are quite a lot of functions disabled
 ; voronoi ask patches [set pcolor startarea]
 ; rev-voronoi ask patches[set pcolor currentcolor]
@@ -510,8 +515,9 @@ to draw-world-items
 end
 
 
-
-; Copyright 2015 Uri Wilensky.
+; Base model is copyrighted 2015 Grider, R. and U. Wilensky.
+; Used model snippets are from voronoi, mouse example, vision cone example, wealth distribution Copyright all U. Wilensky
+; Copyright for the enhancing the model and the Info Text Rieke Ammoneit & Chris Reudenbach 2020
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -1225,6 +1231,20 @@ Auf Grundlage dieser Beobachtungen kann geschlossen werden, dass das vorliegende
 1. Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, [URL](http://jasss.soc.surrey.ac.uk/17/3/11.html), [DOI](DOI:10.18564/jasss.2503), Zugriff: 28.01.2020
 1. Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
 1. Wilensky, U. (1999). NetLogo. (http://ccl.northwestern.edu/netlogo/), Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+
+## COPYRIGHT AND LICENSE
+The above Text and the implementation of the current model is under Copyright of Rieke Ammoneit and Chris Reudenbach
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/de/"><img alt="Creative Commons Lizenzvertrag" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/de/88x31.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/de/">Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 3.0 Deutschland Lizenz</a>.
+
+
+All parts from Netlogo used library models have Copyright 2015 Uri Wilensky.
+
+![CC BY-NC-SA 3.0](http://ccl.northwestern.edu/images/creativecommons/byncsa.png)
+
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+
+Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
+
 @#$#@#$#@
 default
 true
