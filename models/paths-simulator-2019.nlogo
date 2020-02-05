@@ -1,3 +1,7 @@
+; there are quite a lot of functions disabled
+; voronoi ask patches [set pcolor startarea]
+; rev-voronoi ask patches[set pcolor currentcolor]
+
 ; define turtles
 breed [ walkers walker ]
 
@@ -269,9 +273,16 @@ to make-experiment
     if selected-experiment ="houseOfSantaClaus" [set goal one-of patches with [pcolor = orange]]
       set size 4
       set color 45
-      set shape "person student"]
+      set shape "person student"
+      set color first available-colors
+      set available-colors butfirst available-colors
+      ]
+    ]
+    ask patches[
+      set startarea [color] of min-one-of walkers [distance myself]
     ]
 
+    ask walkers [set color black]
   ]
 
   ; square
@@ -374,10 +385,29 @@ end
 
 ; calls the help text not implemented yet
 to help
- clear-all
-  import-drawing "images/help.png"
-if user-yes-or-no? "OK?"
-  [ clear-all ]
+
+  user-message (word "Quick Help\n"
+"------------------------------experiments--------------------------------------------------"
+  "|| selected-experiments || \n"
+  "|| fixed geometry || (Y, square,  pentagon) spatial experiments with the orange dots as goals\n"
+  "|| street-goals || (preset-roads)  experiments, with the roads creating walkers and goals only\n"
+  "|| orange-goals || (orange patterns) experiment with free drawable orange patterns as goals\n"
+  "--------------------------------------------------------------------------------------------------\n"
+  "Check out draw-world-item for drawing gray,red,green and orange patches."
+  "Note that these colors will be preset with the corresponding attributes\n"
+  "---------------------------setup parameter----------------------------------------------\n"
+  "|| n-walker || defines the number of walkers\n"
+  "|| walker-vision-dist || defines the radius (in patches) a walker can analyse its sourounding\n"
+  "|| walker-v-angle || defines the angle of the walkers vision cone when avoiding an obstacle\n"
+  "|| max-pop || switch if true walkers will look for the patch with the maximum available popularity\n"
+  "|| pop-lowlimit|| enter the minimum popularity value for a patch to be seen as an existing  path\n"
+  "|| road-pop|| enter the popularity value for a street patch.\n"
+"----------------------------------visualisation-------------------------------------------\n"
+  "|| vis-vision || switch if true walkers show the cone of perception\n"
+  "|| vis-pop || switch to scale during model runs the color of popularity\n"
+  "|| show-goal || switch to show the goals during a street model run only\n"
+  "|| message || switch to turn off GUI-related messages\n"
+  )
 end
 
 ;; this procedure recomputes the value of gini-index-reserve
@@ -708,7 +738,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "orange-goals" "street-goals" "Y" "houseOfSantaClaus" "square"
-0
+4
 
 TEXTBOX
 10
@@ -934,6 +964,23 @@ BUTTON
 168
 export scaled view
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+195
+485
+258
+518
+NIL
+help\n
 NIL
 1
 T
