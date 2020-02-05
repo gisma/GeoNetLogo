@@ -18,10 +18,7 @@ globals [
 ; setup procedure carried out once
 to setup
   clear-all
-    set available-colors shuffle filter [ c ->
-    (c mod 10 >= 3) and (c mod 10 <= 7)
-  ]  n-values 140 [ n -> n ]
-
+  create-colorlist
   set vis-pop false
   ask patches [ set pcolor green
     set obstacle 0
@@ -331,10 +328,13 @@ end
 
 ;#########################################################
 ; reporter for analysis
+
+; checks if new paths patches are created if not stop simulation
+; according to
 to-report stopitnow
   let stopit false
-  if old-gray-patches = count-of-trampling and  ticks > (n-walker * 75) [set stopit true]
-
+  let resolution abs(min-pxcor) + abs(max-pxcor)
+  if old-gray-patches = count-of-trampling and  ticks > (n-walker * 0.75 * resolution ) [set stopit true]
   report stopit
 end
 ; reports number of gray patches
@@ -424,7 +424,12 @@ end
 
 
 ;#########################################################
+to create-colorlist
+  set available-colors shuffle filter [ c ->
+    (c mod 10 >= 3) and (c mod 10 <= 7)
+  ]  n-values 140 [ n -> n ]
 
+end
 
 to paint-p [p]
   ask p [ set pcolor gray]
@@ -485,10 +490,10 @@ ticks
 45.0
 
 BUTTON
-35
-35
-140
-68
+210
+15
+295
+48
 NIL
 setup
 NIL
@@ -502,10 +507,10 @@ NIL
 1
 
 BUTTON
-165
-35
-265
-68
+350
+55
+435
+88
 go
 go
 T
@@ -520,24 +525,24 @@ NIL
 
 SLIDER
 10
-140
+115
 155
-173
+148
 walker-vision-dist
 walker-vision-dist
 1
 200
-1.0
+25.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-10
-335
-120
-368
+215
+350
+325
+383
 show-goal
 show-goal
 1
@@ -545,20 +550,20 @@ show-goal
 -1000
 
 CHOOSER
-10
-435
-140
-480
+15
+340
+145
+385
 p_color
 p_color
 "red" "orange" "grey" "green"
 0
 
 BUTTON
-10
-485
-140
-525
+15
+390
+145
+430
 NIL
 draw-world-items
 T
@@ -572,10 +577,10 @@ NIL
 1
 
 SLIDER
-10
-400
-140
-433
+15
+305
+145
+338
 line-width
 line-width
 0.2
@@ -588,9 +593,9 @@ HORIZONTAL
 
 SLIDER
 10
-105
+80
 155
-138
+113
 n-walker
 n-walker
 1
@@ -603,9 +608,9 @@ HORIZONTAL
 
 SLIDER
 10
-175
+150
 155
-208
+183
 walker-v-angle
 walker-v-angle
 1
@@ -617,10 +622,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-235
-335
-345
-368
+215
+310
+325
+343
 vis-vision
 vis-vision
 1
@@ -628,23 +633,23 @@ vis-vision
 -1000
 
 TEXTBOX
-10
-310
-465
-346
------------------------------------------Visualisation-------------------------------
+220
+285
+445
+321
+-------runtime visualisation-------
 15
 0.0
 1
 
 TEXTBOX
--5
-380
-165
-406
-----------------DRAW---------------
-12
-0.0
+0
+285
+170
+321
+----------drawing----------
+15
+12.0
 1
 
 MONITOR
@@ -659,20 +664,20 @@ count-of-trampling
 10
 
 CHOOSER
-320
-140
-460
-185
+15
+475
+145
+520
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
 3
 
 SLIDER
-320
-105
-460
-138
+15
+440
+145
+473
 road-width
 road-width
 1
@@ -684,10 +689,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-125
-335
-235
-368
+330
+350
+440
+383
 message
 message
 1
@@ -695,10 +700,10 @@ message
 -1000
 
 CHOOSER
-320
-190
-460
-235
+10
+30
+155
+75
 selected-experiment
 selected-experiment
 "none" "Y" "houseOfSantaClaus" "square" "o-goal" "s-goal"
@@ -709,16 +714,16 @@ TEXTBOX
 10
 465
 28
---------------------------- Setup and Scenarios-------------------------------
+------ scenarios-------
 15
 0.0
 1
 
 SWITCH
-350
-335
-460
-368
+330
+310
+440
+343
 vis-pop
 vis-pop
 1
@@ -726,21 +731,21 @@ vis-pop
 -1000
 
 SWITCH
-170
-105
-310
-138
+10
+185
+155
+218
 max-pop
 max-pop
-1
+0
 1
 -1000
 
 INPUTBOX
-170
-140
-240
-200
+10
+220
+80
+280
 pop-lowlimit
 1.0
 1
@@ -748,10 +753,10 @@ pop-lowlimit
 Number
 
 INPUTBOX
-240
-140
-310
-200
+85
+220
+155
+280
 roads-pop
 2000.0
 1
@@ -810,10 +815,10 @@ PENS
 "default" 50.0 1 -16777216 true "" "histogram spop"
 
 BUTTON
-290
-35
-377
-68
+350
+15
+435
+48
 go-once
 go
 NIL
@@ -827,10 +832,10 @@ NIL
 1
 
 BUTTON
-205
-410
-325
-443
+195
+135
+315
+168
 Remove walkers
 die
 NIL
@@ -844,10 +849,10 @@ NIL
 1
 
 BUTTON
-205
-490
-325
-523
+195
+215
+315
+248
 rescale pop
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\n
 NIL
@@ -861,10 +866,10 @@ NIL
 1
 
 BUTTON
-205
-450
-325
-483
+195
+175
+315
+208
 drop lowlim pop
 \n   let llim patches  with [popularity <= pop-lowlimit]\n   ask llim with [pcolor != orange and pcolor != red][set pcolor green]\n
 NIL
@@ -878,20 +883,20 @@ NIL
 1
 
 TEXTBOX
-250
-380
-460
-406
+225
+115
+435
+141
 ----------------Helpers---------------
 12
 0.0
 1
 
 BUTTON
-335
-450
-455
-483
+325
+175
+445
+208
 export world
 export-world (word \"export-world \" behaviorspace-experiment-name behaviorspace-run-number \".csv\")\n
 NIL
@@ -905,10 +910,10 @@ NIL
 1
 
 BUTTON
-335
-490
-455
-523
+325
+215
+445
+248
 export distribution
 export-plot \"number of patches per percentile\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches-per-percentile.csv\")
 NIL
@@ -922,10 +927,10 @@ NIL
 1
 
 BUTTON
-335
-410
-455
-443
+325
+135
+445
+168
 export scaled view
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
 NIL
@@ -982,8 +987,7 @@ Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf eine
 
 ![Räumliche Positionen des Experiments Dreieck.](images/abb1.png)
 Abbildung 1: Räumliche Positionen des Experiments. Die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) sind die wechselseitig zugelosten Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht gezeigt.
-<img src="images/abb1.png" alt="Simply Easy Learning" width="200"
-         height="80">
+
 ### Regeln aus dem Wortmodell
 Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
@@ -1707,7 +1711,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.2
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -1787,8 +1791,10 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
-    <metric>trampling</metric>
-    <metric>popularity-minimum</metric>
+    <exitCondition>stopitnow</exitCondition>
+    <metric>count-of-trampling</metric>
+    <metric>count-of-trampling-without-popularity</metric>
+    <metric>count-of-popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
     <enumeratedValueSet variable="show-goal">
@@ -1844,8 +1850,10 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
-    <metric>trampling</metric>
-    <metric>popularity-minimum</metric>
+    <exitCondition>stopitnow</exitCondition>
+    <metric>count-of-trampling</metric>
+    <metric>count-of-trampling-without-popularity</metric>
+    <metric>count-of-popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
     <enumeratedValueSet variable="show-goal">
@@ -1902,8 +1910,10 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
-    <metric>trampling</metric>
-    <metric>popularity-minimum</metric>
+    <exitCondition>stopitnow</exitCondition>
+    <metric>count-of-trampling</metric>
+    <metric>count-of-trampling-without-popularity</metric>
+    <metric>count-of-popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
     <enumeratedValueSet variable="show-goal">
