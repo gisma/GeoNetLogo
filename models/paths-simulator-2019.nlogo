@@ -420,6 +420,14 @@ to help
   "|| vis-pop || switch to scale during model runs the color of popularity\n"
   "|| show-goal || switch to show the goals during a street model run only\n"
   "|| message || switch to turn off GUI-related messages\n"
+"----------------------------------Helpers---------------------------------------------\n"
+  "|| export-scaled-view || exports the color-scaled view of the current state of the world as an png image to a file. The user has to provide a name.\n"
+  "|| export-world || export the current state of the model to ancsv file. The name is automatically choosen.\n"
+  "|| export-ditribution-plot || export the current distibution data to a csv file. The name is automatically choosen.\n"
+  "|| drop lowlim pop || recolors the patches that are used less than the pop-lowlimit value to green\n"
+  "|| rescale pop || recolors the  drop-lowlim patches back to the original color\n"
+  "|| remove walkers || does it truly and forever!\n"
+
   )
 end
 
@@ -576,7 +584,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-25.0
+10.0
 1
 1
 NIL
@@ -659,7 +667,7 @@ walker-v-angle
 walker-v-angle
 1
 360
-1.0
+15.0
 1
 1
 NIL
@@ -781,7 +789,7 @@ SWITCH
 218
 max-pop
 max-pop
-0
+1
 1
 -1000
 
@@ -880,7 +888,7 @@ BUTTON
 135
 315
 168
-Remove walkers
+remove walkers
 die
 NIL
 1
@@ -939,7 +947,7 @@ TEXTBOX
 BUTTON
 325
 175
-445
+450
 208
 export world
 export-world (word \"export-world \" behaviorspace-experiment-name behaviorspace-run-number \".csv\")\n
@@ -956,7 +964,7 @@ NIL
 BUTTON
 325
 215
-445
+450
 248
 export distribution
 export-plot \"number of patches per percentile\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches-per-percentile.csv\")
@@ -973,7 +981,7 @@ NIL
 BUTTON
 325
 135
-445
+450
 168
 export scaled view
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
@@ -988,10 +996,10 @@ NIL
 1
 
 BUTTON
-195
-485
-258
-518
+220
+60
+283
+93
 NIL
 help\n
 NIL
