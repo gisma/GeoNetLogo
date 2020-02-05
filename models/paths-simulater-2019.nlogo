@@ -3,7 +3,7 @@ breed [ walkers walker ]
 
 ; define turtles and patches specific variables
 walkers-own [ goal ]
-patches-own [ popularity streets obstacle ]
+patches-own [ popularity streets obstacle startarea currentcolor]
 
 ; define global (observer) variables
 globals [
@@ -11,20 +11,29 @@ globals [
   visible-routes
   gini-index-reserve
   lorenz-points
+  old-gray-patches
+  available-colors
 ]
 
 ; setup procedure carried out once
 to setup
   clear-all
+    set available-colors shuffle filter [ c ->
+    (c mod 10 >= 3) and (c mod 10 <= 7)
+  ]  n-values 140 [ n -> n ]
+
   set vis-pop false
   ask patches [ set pcolor green
     set obstacle 0
     set popularity 0
+    set old-gray-patches 0
   ]
 
   ; call the experiment setup procedure
   make-experiment
-
+ask patches[
+      set currentcolor pcolor
+    ]
  ; if no experiment is choosen stop
   if selected-experiment = "none" [
     if message [user-message (word "Es wurde kein Szenario gewählt?!\n Zähle jetzt Schafe...")]
@@ -39,21 +48,28 @@ to setup
   ; finsihed so reset ticks
   ; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
+
   reset-ticks
 end
 
 ; procedure that controls the model run
 ; adapted from the original paths model
 to go
+  set old-gray-patches count-of-trampling
   ; for runtime scaling and graying the popularity patches
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
-
+  ask patches[ if pcolor != green [
+    set currentcolor pcolor ]
+    ]
   ; main procedure that rules the movement
   move-walkers
 
   ; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
+
+
+
   tick
 
   ; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
@@ -232,12 +248,19 @@ to make-experiment
     ask patches at-points [ [-40 -36] [4 27] [35 -43]] [ set pcolor orange]
     ; create walkers according to the settings
     ask  n-of n-walker patches [sprout-walkers 1 [
-    if selected-experiment ="Y" [set goal one-of patches with [pcolor = orange]]
+      set goal one-of patches with [pcolor = orange]
       set size 5
       set color black
-      set shape "stud_tri"]
+      set shape "stud_tri"
+      set color first available-colors
+      set available-colors butfirst available-colors
+      ]
+    ]
+    ask patches[
+      set startarea [color] of min-one-of walkers [distance myself]
     ]
 
+    ask walkers [set color black]
   ]
 
   ; pentagle
@@ -308,14 +331,19 @@ end
 
 ;#########################################################
 ; reporter for analysis
+to-report stopitnow
+  let stopit false
+  if old-gray-patches = count-of-trampling and  ticks > (n-walker * 75) [set stopit true]
 
+  report stopit
+end
 ; reports number of gray patches
-to-report trampling
+to-report count-of-trampling
   report  count patches  with [popularity >= pop-lowlimit]
 end
 
 ; reports number of patches with the pop-lowlimit value
-to-report popularity-minimum
+to-report count-of-popularity-minimum
   report  count patches  with [popularity = pop-lowlimit  ]
 end
 
@@ -335,7 +363,12 @@ end
 
 ; reports the Gini Coefficient
 to-report gini-05
-  report  gini-index-reserve / trampling
+  report  gini-index-reserve / count-of-trampling
+end
+
+; reports number of patches that are used without noticed to be popular
+to-report count-of-trampling-without-popularity
+   report count patches  with [popularity < pop-lowlimit and pcolor != green and pcolor != orange]
 end
 
 ; calls the help text not implemented yet
@@ -494,7 +527,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-25.0
+1.0
 1
 1
 NIL
@@ -617,10 +650,10 @@ TEXTBOX
 MONITOR
 470
 535
-590
+602
 576
-Zahl l pop > lowlimit
-trampling
+count pop >=  lowlimit
+count-of-trampling
 0
 1
 10
@@ -728,7 +761,7 @@ Number
 MONITOR
 470
 625
-590
+600
 666
 average popularity
 popularity-average
@@ -739,7 +772,7 @@ popularity-average
 MONITOR
 470
 670
-590
+600
 711
 max-popularity
 popularity-maximum
@@ -750,10 +783,10 @@ popularity-maximum
 MONITOR
 470
 580
-590
+600
 621
-Zahl min pop
-popularity-minimum
+countl min pop
+count-of-popularity-minimum
 0
 1
 10
@@ -878,6 +911,23 @@ BUTTON
 523
 export distribution
 export-plot \"number of patches per percentile\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches-per-percentile.csv\")
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+335
+410
+455
+443
+export scaled view
+let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
 NIL
 1
 T
@@ -1662,14 +1712,16 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="run_all" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="run_all_max_2" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
-    <metric>trampling</metric>
-    <metric>popularity-minimum</metric>
+    <exitCondition>stopitnow</exitCondition>
+    <metric>count-of-trampling</metric>
+    <metric>count-of-trampling-without-popularity</metric>
+    <metric>count-of-popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
     <enumeratedValueSet variable="show-goal">
@@ -1683,8 +1735,12 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     </enumeratedValueSet>
     <enumeratedValueSet variable="walker-vision-dist">
       <value value="1"/>
-      <value value="25"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
       <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pop">
       <value value="false"/>
@@ -1714,10 +1770,12 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
       <value value="&quot;square&quot;"/>
+      <value value="&quot;houseOfSantaClaus&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
       <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="message">
       <value value="false"/>
