@@ -494,7 +494,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-50.0
+25.0
 1
 1
 NIL
@@ -681,23 +681,6 @@ TEXTBOX
 0.0
 1
 
-BUTTON
-335
-490
-455
-523
-NIL
-help
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 SWITCH
 350
 335
@@ -716,7 +699,7 @@ SWITCH
 138
 max-pop
 max-pop
-0
+1
 1
 -1000
 
@@ -811,10 +794,10 @@ NIL
 1
 
 BUTTON
-335
-450
-455
-483
+205
+410
+325
+443
 Remove walkers
 die
 NIL
@@ -871,6 +854,40 @@ TEXTBOX
 0.0
 1
 
+BUTTON
+335
+450
+455
+483
+export world
+export-world (word \"export-world \" behaviorspace-experiment-name behaviorspace-run-number \".csv\")\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+335
+490
+455
+523
+export distribution
+export-plot \"number of patches per percentile\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches-per-percentile.csv\")
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
 
@@ -915,7 +932,8 @@ Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf eine
 
 ![Räumliche Positionen des Experiments Dreieck.](images/abb1.png)
 Abbildung 1: Räumliche Positionen des Experiments. Die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) sind die wechselseitig zugelosten Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht gezeigt.
-
+<img src="images/abb1.png" alt="Simply Easy Learning" width="200"
+         height="80">
 ### Regeln aus dem Wortmodell
 Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
