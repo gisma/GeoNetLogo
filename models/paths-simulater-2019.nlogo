@@ -310,12 +310,12 @@ end
 ; reporter for analysis
 
 ; reports number of gray patches
-to-report trampling
+to-report count-of-trampling
   report  count patches  with [popularity >= pop-lowlimit]
 end
 
 ; reports number of patches with the pop-lowlimit value
-to-report popularity-minimum
+to-report count-of-popularity-minimum
   report  count patches  with [popularity = pop-lowlimit  ]
 end
 
@@ -335,7 +335,12 @@ end
 
 ; reports the Gini Coefficient
 to-report gini-05
-  report  gini-index-reserve / trampling
+  report  gini-index-reserve / count-of-trampling
+end
+
+; reports number of patches that are used without noticed to be popular
+to-report count-of-trampling-without-popularity
+   report count patches  with [popularity < pop-lowlimit and pcolor != green and pcolor != orange]
 end
 
 ; calls the help text not implemented yet
@@ -494,7 +499,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-25.0
+1.0
 1
 1
 NIL
@@ -617,10 +622,10 @@ TEXTBOX
 MONITOR
 470
 535
-590
+602
 576
-Zahl l pop > lowlimit
-trampling
+count pop >=  lowlimit
+count-of-trampling
 0
 1
 10
@@ -728,7 +733,7 @@ Number
 MONITOR
 470
 625
-590
+600
 666
 average popularity
 popularity-average
@@ -739,7 +744,7 @@ popularity-average
 MONITOR
 470
 670
-590
+600
 711
 max-popularity
 popularity-maximum
@@ -750,10 +755,10 @@ popularity-maximum
 MONITOR
 470
 580
-590
+600
 621
-Zahl min pop
-popularity-minimum
+countl min pop
+count-of-popularity-minimum
 0
 1
 10
@@ -930,10 +935,10 @@ Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der rel
 ### Ziele und  Raum
 Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf einer isomorphen Fläche (grün) leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) gebildet (siehe Abbildung 1).
 
-![Räumliche Positionen des Experiments "Dreieck".](images/abb1.png)
-
-Abbildung 1: Räumliche Positionen des Experiments _Dreick_. Die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) sind die wechselseitig zugelosten Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht gezeigt.
-
+![Räumliche Positionen des Experiments Dreieck.](images/abb1.png)
+Abbildung 1: Räumliche Positionen des Experiments. Die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) sind die wechselseitig zugelosten Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht gezeigt.
+<img src="images/abb1.png" alt="Simply Easy Learning" width="200"
+         height="80">
 ### Regeln aus dem Wortmodell
 Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
 
@@ -1017,8 +1022,7 @@ Da in _run\_1 und _run\_2_ gut erkennbar ist, dass die grundsätzlichen Muster d
 
 In Abbildungspanel 2 sind _run\_1_ und _run\_2_ (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  mit dem Wert **1** durchgeführt worden. Gut zu erkennen sind die zwischen den Zielpunkten faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_-Schwellenwertes. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen massiven Peak im ersten Dezil aufweist und dann im 7 bis 9 Dezil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) _popularity_-Werten der Patches gebildet wird. 
 
-
-<img src="images/abb2.png" alt="Modellläufe 1 und 2" width="800">
+![Modellläufe 1 und 2]( images/abb2.png)
 
 Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
@@ -1059,8 +1063,7 @@ Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _populari
 
 In Abbildungspanel 3 sind _run\_3_ und _run\_4_ (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterte Wahrnehmung der walker (siehe Tabelle 1). Gut zu erkennen sind die für Betretungshäufigkeiten größer des _min-poplimit_-Schwellenwertes zwischen den Zielpunkten deutlich gekrümmten und aufgespreizten Trampelpfade. Vor allem im _run\_3_ fällt die Variabilität des Hauptmusters auf. Hier ist die Reichweite der _walker-vis-dist_  mit 25 deutlich eingeschränkter als im _run\_4_ (50). Daher sind die resultierenden Muster abhängiger von der initialen Verteilung der Akteure. Im _run\_4_ ist dieses Muster dank der größeren Reichweite der _walker-vis-dist_ sichtbar stabiler und unabhängiger von der Erstverteilung der Akteure im Raum. Auch gut zu erkennen ist die Verteilung der _popularity_-Werte, die anders als zuvor in den ersten 3 Dezilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
 
-
-<img src="images/abb3.png" alt="Modellläufe 3 und 4" width="800">
+![Modellläufe 3 und 4]( images/abb3.png)
 
 Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _gleich min-poplimit_ häufig betreten worden. _Größer min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
@@ -1071,7 +1074,7 @@ Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze
 
 In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und ihrer Orientierung an Patches mit einer *maximalen* Popularität (siehe Tabelle 1). Die Läufe unterscheiden sich recht deutlich von den zuvor gezeigten Simulationen. Während _run\_5 erwartungsgemäß und bedingt durch die Bedingung _walker-vis-dist = 1_  als prinzipiell identisch mit _run\_1_ betrachtet werden kann, weichen die Läufe _run\_5_ und _run\_7_ erheblich von den vergleichbaren _walker-vis-dist_-Simulationen mit nicht optimierter Fokussierung auf maximale Popularität ab. Zunächst zeigen sich wie bei _run\_1_ und _run\_6_ als Hauptmuster eindeutig die linearen Optimierungspfade zwischen den Zielen die entsprechend hohe Popularitätswerte aufweisen. Betrachtet man aber vor allem den _run\_6_ zeigt sich, dass  wenig oder nur einmalig benutzte Parallel-Pfade zu den optimierten Hauptpfaden entstanden sind. Sehr stark tritt dies in _run\_6 #1-3_ und _run\_7 #2/#4_ hervor. 
 
-<img src="images/abb4.png" alt="Modellläufe 5 bis 7" width="800">
+![Modellläufe 5 - 7]( images/abb4.png)
 
 Abbildung 4: Modelllauf 5 -7 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
 
@@ -1664,14 +1667,15 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="run_all" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="run_all_max" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
-    <metric>trampling</metric>
-    <metric>popularity-minimum</metric>
+    <metric>count-of-trampling</metric>
+    <metric>count-of-trampling-without-popularity</metric>
+    <metric>count-of-popularity-minimum</metric>
     <metric>popularity-maximum</metric>
     <metric>popularity-average</metric>
     <enumeratedValueSet variable="show-goal">
@@ -1685,8 +1689,12 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     </enumeratedValueSet>
     <enumeratedValueSet variable="walker-vision-dist">
       <value value="1"/>
-      <value value="25"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
       <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-pop">
       <value value="false"/>
@@ -1716,10 +1724,12 @@ export-plot "number of patches per percentile"  (word "results/results " behavio
     <enumeratedValueSet variable="selected-experiment">
       <value value="&quot;Y&quot;"/>
       <value value="&quot;square&quot;"/>
+      <value value="&quot;houseOfSantaClaus&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="n-walker">
       <value value="10"/>
       <value value="50"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="message">
       <value value="false"/>
