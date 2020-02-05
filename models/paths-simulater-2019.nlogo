@@ -3,7 +3,7 @@ breed [ walkers walker ]
 
 ; define turtles and patches specific variables
 walkers-own [ goal ]
-patches-own [ popularity streets obstacle ]
+patches-own [ popularity streets obstacle startarea currentcolor]
 
 ; define global (observer) variables
 globals [
@@ -11,20 +11,29 @@ globals [
   visible-routes
   gini-index-reserve
   lorenz-points
+  old-gray-patches
+  available-colors
 ]
 
 ; setup procedure carried out once
 to setup
   clear-all
+    set available-colors shuffle filter [ c ->
+    (c mod 10 >= 3) and (c mod 10 <= 7)
+  ]  n-values 140 [ n -> n ]
+
   set vis-pop false
   ask patches [ set pcolor green
     set obstacle 0
     set popularity 0
+    set old-gray-patches 0
   ]
 
   ; call the experiment setup procedure
   make-experiment
-
+ask patches[
+      set currentcolor pcolor
+    ]
  ; if no experiment is choosen stop
   if selected-experiment = "none" [
     if message [user-message (word "Es wurde kein Szenario gewählt?!\n Zähle jetzt Schafe...")]
@@ -39,21 +48,28 @@ to setup
   ; finsihed so reset ticks
   ; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
+
   reset-ticks
 end
 
 ; procedure that controls the model run
 ; adapted from the original paths model
 to go
+  set old-gray-patches count-of-trampling
   ; for runtime scaling and graying the popularity patches
   ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
-
+  ask patches[ if pcolor != green [
+    set currentcolor pcolor ]
+    ]
   ; main procedure that rules the movement
   move-walkers
 
   ; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
+
+
+
   tick
 
   ; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
@@ -232,12 +248,19 @@ to make-experiment
     ask patches at-points [ [-40 -36] [4 27] [35 -43]] [ set pcolor orange]
     ; create walkers according to the settings
     ask  n-of n-walker patches [sprout-walkers 1 [
-    if selected-experiment ="Y" [set goal one-of patches with [pcolor = orange]]
+      set goal one-of patches with [pcolor = orange]
       set size 5
       set color black
-      set shape "stud_tri"]
+      set shape "stud_tri"
+      set color first available-colors
+      set available-colors butfirst available-colors
+      ]
+    ]
+    ask patches[
+      set startarea [color] of min-one-of walkers [distance myself]
     ]
 
+    ask walkers [set color black]
   ]
 
   ; pentagle
@@ -308,7 +331,12 @@ end
 
 ;#########################################################
 ; reporter for analysis
+to-report stopitnow
+  let stopit false
+  if old-gray-patches = count-of-trampling and  ticks > (n-walker * 75) [set stopit true]
 
+  report stopit
+end
 ; reports number of gray patches
 to-report count-of-trampling
   report  count patches  with [popularity >= pop-lowlimit]
@@ -1684,12 +1712,13 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="run_all_max" repetitions="50" runMetricsEveryStep="false">
+  <experiment name="run_all_max_2" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <final>export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
 export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")</final>
     <timeLimit steps="2500"/>
+    <exitCondition>stopitnow</exitCondition>
     <metric>count-of-trampling</metric>
     <metric>count-of-trampling-without-popularity</metric>
     <metric>count-of-popularity-minimum</metric>
