@@ -262,6 +262,9 @@ to make-experiment
     ]
 
     ask walkers [set color black]
+        if message = true [user-message (word "A predefined triangle in the form of orange corner points was created. \n"
+      "With the draw-world-items button and the color selection orange, further destinations can be set.\n"
+      "The colour gray creates roads, green creates meadows and red creates barriers.")  ]
   ]
 
   ; pentagon
@@ -283,6 +286,9 @@ to make-experiment
     ]
 
     ask walkers [set color black]
+        if message = true [user-message (word "A predefined pentagon in the form of orange corner points was created.  \n"
+      "With the draw-world-items button and the color selection orange, further destinations can be set.\n"
+      "The colour gray creates roads, green creates meadows and red creates barriers.")  ]
   ]
 
   ; square
@@ -295,6 +301,9 @@ to make-experiment
       set color 45
       set shape "person student"]
     ]
+     if message = true [user-message (word "A predefined square in the form of orange corner points was created.  \n"
+      "With the draw-world-items button and the color selection orange, further destinations can be set.\n"
+      "The colour gray creates roads, green creates meadows and red creates barriers.")  ]
   ]
 
   ; a street szenario is choosen and strets are the only places for goals and turles to be born
@@ -319,7 +328,8 @@ to make-experiment
         set shape "person student"
       ]
     ]
-     if message [user-message (word "Es wurden keine vordefinierten Strassen gewählt.\n Bitte JETZT Strassen zeichnen!")]
+     if message [user-message (word "In the selection menu 'predifined-roads' NO predefined roads have been selected.\n"
+        "Therefore either define NEW setup or draw roads manually NOW")]
     ]
   ]
 
@@ -333,7 +343,10 @@ to make-experiment
       set color 45
       set shape "person student"]
     ]
-    if message [user-message (word "Es wurden vier zufällige Ziele erzeugt. \nMit dem draw-world-items Button und der Farbauswahl orange können Weitere Ziele gesetzt werden.\n die Farbauswahl gray bzw. green erzeugt Strassen und Wiesen. ")  ]
+
+    if message = true [user-message (word "Four random  orange patches were created.  \n"
+      "With the draw-world-items button and the color selection orange, further destinations can be set.\n"
+      "The colour gray creates roads, green creates meadows and red creates barriers.")  ]
   ]
 end
 
@@ -702,7 +715,7 @@ CHOOSER
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
-0
+3
 
 SLIDER
 15
