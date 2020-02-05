@@ -893,6 +893,23 @@ NIL
 NIL
 1
 
+BUTTON
+335
+410
+455
+443
+export scaled view
+let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
 
