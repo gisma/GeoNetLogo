@@ -63,7 +63,8 @@ end
 to go
   set old-gray-patches count-of-trampling
   ; for runtime scaling and graying the popularity patches
-  ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != orange and pcolor != red] [set pcolor gray]]
+  ask patches with[obstacle = 1][set pcolor red]
+  ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != green and pcolor != orange and pcolor != red] [set pcolor gray]]
   [scale-p]
   ask patches[ if pcolor != green [
     set currentcolor pcolor ]
@@ -364,7 +365,7 @@ to-report stopitnow
   let stopit false
   let resolution abs(min-pxcor) + abs(max-pxcor)
 
-  if old-gray-patches = count-of-trampling and  ticks > (n-walker * 0.75 * resolution ) [set stopit true]
+  if old-gray-patches = count-of-trampling and  ticks > (100 / n-walker * resolution ) [set stopit true]
   report stopit
 end
 ; reports number of gray patches
@@ -470,6 +471,7 @@ end
 ;; procedure to colorize the popularity
 ;; a linear approach from lowliomit to current max value is applied
 to   scale-p
+  set vis-vision false
   if ticks > 10 [
   let pmax max [popularity] of patches
   ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
@@ -590,7 +592,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-10.0
+13.0
 1
 1
 NIL
@@ -633,21 +635,6 @@ NIL
 NIL
 NIL
 1
-
-SLIDER
-15
-305
-145
-338
-line-width
-line-width
-0.2
-5
-1.2
-0.2
-1
-NIL
-HORIZONTAL
 
 SLIDER
 10
@@ -1018,6 +1005,21 @@ NIL
 NIL
 1
 
+SLIDER
+15
+305
+145
+338
+line-width
+line-width
+1
+100
+5.0
+1
+1
+NIL
+HORIZONTAL
+
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
 
@@ -1244,7 +1246,6 @@ All parts from Netlogo used library models have Copyright 2015 Uri Wilensky.
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 
 Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
-
 @#$#@#$#@
 default
 true
@@ -1800,7 +1801,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.2
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
