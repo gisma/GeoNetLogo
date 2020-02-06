@@ -82,7 +82,7 @@ to go
   ; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
   ;if ticks = 4000 [
   ;  export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
-  ;  export-plot "number of patches per percentile"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-percentile.csv")
+  ;  export-plot "number of patches"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-decentile.csv")
   ;]
 
 end
@@ -304,8 +304,8 @@ to make-experiment
         ask  n-of n-walker patches [sprout-walkers 1 [
     if selected-experiment ="square" [set goal one-of patches with [pcolor = orange]]
       set size 4
-      set color 45
-      set shape "person student"]
+      set color 105
+      set shape "stud-square"]
     ]
      if message = true [user-message (word "A predefined square in the form of orange corner points was created.  \n"
       "With the draw-world-items button and the color selection orange, further destinations can be set.\n"
@@ -568,9 +568,9 @@ NIL
 
 BUTTON
 350
-55
+15
 435
-88
+48
 go
 go
 T
@@ -752,7 +752,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "orange-goals" "street-goals" "Y" "houseOfSantaClaus" "square"
-4
+1
 
 TEXTBOX
 10
@@ -846,9 +846,9 @@ PLOT
 535
 975
 710
-number of patches per percentile
-Percentile
-Count
+number of patches
+decentile
+count
 0.0
 100.0
 0.0
@@ -861,9 +861,9 @@ PENS
 
 BUTTON
 350
-15
+55
 435
-48
+88
 go-once
 go
 NIL
@@ -960,7 +960,7 @@ BUTTON
 450
 248
 export distribution
-export-plot \"number of patches per percentile\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches-per-percentile.csv\")
+export-plot \"number of patches\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches_decentile.csv\")
 NIL
 1
 T
@@ -989,10 +989,10 @@ NIL
 1
 
 BUTTON
-220
-60
-283
-93
+210
+55
+295
+88
 NIL
 help\n
 NIL
@@ -1013,9 +1013,9 @@ SLIDER
 line-width
 line-width
 1
-100
-5.0
-1
+20
+1.0
+0.5
 1
 NIL
 HORIZONTAL
@@ -1700,6 +1700,19 @@ false
 0
 Polygon -7500403 true true 151 1 185 108 298 108 207 175 242 282 151 216 59 282 94 175 3 108 116 108
 
+stud-square
+false
+0
+Polygon -13791810 true false 135 90 150 105 135 165 150 180 165 165 150 105 165 90
+Polygon -7500403 true true 195 90 240 195 210 210 165 105
+Circle -7500403 true true 110 5 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -7500403 true true 105 90 60 195 90 210 135 105
+Polygon -7500403 false true 60 150
+Polygon -1184463 false false 285 105 285 210 180 210 180 105
+Rectangle -1184463 false false 184 109 281 209
+
 stud_tri
 false
 0
@@ -1709,8 +1722,9 @@ Circle -7500403 true true 110 5 80
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
 Polygon -7500403 true true 105 90 60 195 90 210 135 105
-Polygon -1184463 true false 60 45 105 225 -15 180 30 105
-Circle -1184463 false false 39 159 42
+Polygon -7500403 false true 60 150
+Polygon -1184463 false false 0 180 75 90 150 210 0 180
+Polygon -1184463 false false 8 178 75 97 144 208
 
 target
 false
