@@ -1,3 +1,4 @@
+extensions [fetch csv dist]
 ; define turtles
 breed [ walkers walker ]
 
@@ -375,6 +376,10 @@ end
 to help
  clear-all
   import-drawing "images/help.png"
+  ;[
+ ; dialog:user-input "Understood?" [
+ ; return -> dialog:user-message (word "Great!  '" name "' is a good name!") [->]
+;]
 if user-yes-or-no? "OK?"
   [ clear-all ]
 end
@@ -928,6 +933,23 @@ BUTTON
 443
 export scaled view
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+235
+625
+298
+658
+NIL
+help
 NIL
 1
 T
