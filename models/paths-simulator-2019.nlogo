@@ -11,7 +11,7 @@
 breed [ walkers walker ]
 
 ; define turtles and patches specific variables
-walkers-own [ goal ]
+walkers-own [ goal walkable]
 patches-own [ popularity streets obstacle startarea currentcolor]
 
 ; define global (observer) variables
@@ -79,7 +79,7 @@ to go
 
   tick
 
-  ; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
+  ;; if you do not want to use the Behavoiur Space you may use the next to calls to dump out result files
   ;if ticks = 4000 [
   ;  export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
   ;  export-plot "number of patches"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-decentile.csv")
@@ -122,7 +122,10 @@ end
 to walk-towards-goal
     ask patch-here [ become-more-popular ]
  face best-way-to goal
- avoid-patches
+  ifelse line-not-cone
+  [avoid-patches-line]
+  [avoid-patches-cone]
+  fd 1
 end
 
 ; procedure that calculate and perfom the decison  of the best direction
@@ -154,13 +157,50 @@ to-report best-way-to [ destination ]
   ]
 end
 
+
+; controls avoiding  barriers by line of sight and storing walkable patches to
+; turtle own list
+to avoid-patches-line
+    ;let dir random-normal 0 1
+  ; if walker is below the visual range of talking care
+  ; it turns by one degree and samples the walkable patches
+  while [line-of-sight < walker-vision-dist][
+    ; ifelse dir < 0 [rt 12.5]
+                    lt 1 ]
+  ; nobody is removed from list
+  set walkable remove nobody walkable
+  face one-of walkable
+
+end
+; reporter of the walkable list in a giben line of sight
+to-report line-of-sight  ;; walker procedure
+  let dist 1
+  let a1 [obstacle] of patch-here
+  let last-patch patch-here
+  set walkable []
+  while [dist <= walker-vision-dist] [
+    let p patch-ahead dist
+    set walkable lput (patch-ahead dist ) walkable
+    if p != last-patch and p != nobody [
+      let a2 [obstacle] of p
+      if a1 < a2
+        [ set dist walker-vision-dist ]
+      set last-patch p
+    ]
+    set dist dist + 1
+  ]
+  report length walkable
+
+  ;]
+end
+
 ; this procedure adapts the forward looking example of obstacles avoidance as presented by
 ; Vision Cone example of the Netlogo Lib in addition some ideas are taken from
 ; Thomas Christy at Bangor University 2009 and modified by William John Teahan
 ; http://files.bookboon.com/ai/index.html
 ; https://files.bookboon.com/ai/Obstacle-Avoidance-1.html
 ; found by google search "netlogo obstacle avoidance" page 3
-to avoid-patches
+to avoid-patches-cone
  ; visualisation of cone of sight
  ; recolor all cone patches to the original colors
  ; we have to do so because otherwise the last cone will remain
@@ -188,20 +228,19 @@ to avoid-patches
 ; turn 12.5 degrees
 ; do this until there is no obstacle in cone
 while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 1] > 0]
- [ rt 12.5 ]
+ [ rt 1 ]
 
  ;  error workaround for touching the boundary of world that produces the "nobody" error
  ; we just check the patch in front and only if it is not nobody we head on
  let try  one-of patches in-cone walker-vision-dist walker-v-angle with [obstacle != 1]
- if try != nobody
+  if try != nobody
 
  ; turn to one of the patches in the cone WITHOUT (!=1) an obstacle
   [face one-of patches in-cone walker-vision-dist walker-v-angle with [obstacle != 1]]
 
-  ; last check if there is no obstacle step 1 forward
-  ; otherwise step 1 backwards and turn 90 deg
-  ifelse [obstacle] of patch-ahead 1 != 1
-  [fd 1 ]
+  ; last check if there is an obstacle
+  ; step 1 backwards and turn 90 deg
+  if [obstacle] of patch-ahead 1 = 1
   [bk 1 lt 90]
 
 end
@@ -592,7 +631,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-13.0
+71.0
 1
 1
 NIL
@@ -611,9 +650,9 @@ show-goal
 
 CHOOSER
 15
-340
+375
 145
-385
+420
 p_color
 p_color
 "red" "orange" "grey" "green"
@@ -621,9 +660,9 @@ p_color
 
 BUTTON
 15
-390
+425
 145
-430
+465
 NIL
 draw-world-items
 T
@@ -660,7 +699,7 @@ walker-v-angle
 walker-v-angle
 1
 360
-15.0
+1.0
 1
 1
 NIL
@@ -689,9 +728,9 @@ TEXTBOX
 
 TEXTBOX
 0
-285
+320
 170
-321
+356
 ----------drawing----------
 15
 12.0
@@ -710,9 +749,9 @@ count-of-trampling
 
 CHOOSER
 15
-475
+510
 145
-520
+555
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
@@ -720,9 +759,9 @@ preset-roads
 
 SLIDER
 15
-440
+475
 145
-473
+508
 road-width
 road-width
 1
@@ -740,7 +779,7 @@ SWITCH
 383
 message
 message
-0
+1
 1
 -1000
 
@@ -752,7 +791,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "orange-goals" "street-goals" "Y" "houseOfSantaClaus" "square"
-1
+3
 
 TEXTBOX
 10
@@ -1007,9 +1046,9 @@ NIL
 
 SLIDER
 15
-305
+340
 145
-338
+373
 line-width
 line-width
 1
@@ -1019,6 +1058,17 @@ line-width
 1
 NIL
 HORIZONTAL
+
+SWITCH
+10
+290
+155
+323
+line-not-cone
+line-not-cone
+1
+1
+-1000
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
