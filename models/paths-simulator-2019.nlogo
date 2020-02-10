@@ -236,7 +236,7 @@ to-report best-way-to [ destination ]
   ]
   ;print [popularity] of visible-routes
   let routes-that-take-me-closer visible-routes with [
-    distance destination < [ distance destination - 1] of myself
+    distance destination < [ distance destination - dist-diff] of myself
   ]
   ; decision
   ifelse any? routes-that-take-me-closer [
@@ -640,7 +640,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-1.0
+19.0
 1
 1
 NIL
@@ -659,9 +659,9 @@ show-goal
 
 CHOOSER
 15
-380
+410
 145
-425
+455
 p_color
 p_color
 "red" "orange" "grey" "green"
@@ -669,9 +669,9 @@ p_color
 
 BUTTON
 15
-430
+460
 145
-470
+500
 NIL
 draw-world-items
 T
@@ -693,7 +693,7 @@ n-walker
 n-walker
 1
 100
-1.0
+15.0
 1
 1
 NIL
@@ -737,9 +737,9 @@ TEXTBOX
 
 TEXTBOX
 0
-325
+355
 170
-361
+391
 ----------drawing----------
 15
 12.0
@@ -758,9 +758,9 @@ count-of-trampling
 
 CHOOSER
 15
-515
+545
 145
-560
+590
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
@@ -768,9 +768,9 @@ preset-roads
 
 SLIDER
 15
-480
+510
 145
-513
+543
 road-width
 road-width
 1
@@ -782,10 +782,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-205
-525
-310
-558
+330
+380
+440
+413
 message
 message
 0
@@ -800,7 +800,7 @@ CHOOSER
 selected-experiment
 selected-experiment
 "none" "orange-goals" "street-goals" "Y" "houseOfSantaClaus" "square"
-3
+5
 
 TEXTBOX
 10
@@ -1037,10 +1037,10 @@ NIL
 1
 
 BUTTON
-205
-485
-310
-518
+330
+420
+440
+453
 NIL
 help\n
 NIL
@@ -1055,9 +1055,9 @@ NIL
 
 SLIDER
 15
-345
+375
 145
-378
+408
 line-width
 line-width
 1
@@ -1070,14 +1070,29 @@ HORIZONTAL
 
 SWITCH
 10
-290
+285
 155
-323
+318
 line-not-cone
 line-not-cone
 1
 1
 -1000
+
+SLIDER
+10
+320
+155
+353
+dist-diff
+dist-diff
+1
+25
+1.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
