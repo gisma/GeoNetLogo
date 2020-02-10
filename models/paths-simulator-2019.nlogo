@@ -61,21 +61,13 @@ end
 ; procedure that controls the model run
 ; adapted from the original paths model
 to go
-  set old-gray-patches count-of-trampling
-  ; for runtime scaling and graying the popularity patches
-  ask patches with[obstacle = 1][set pcolor red]
-  ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != green and pcolor != orange and pcolor != red] [set pcolor gray]]
-  [scale-p]
-  ask patches[ if pcolor != green [
-    set currentcolor pcolor ]
-    ]
+
+  colorize-patches
   ; main procedure that rules the movement
   move-walkers
 
-  ; if you want to calculate a lorenz curve you need to uncomment this call
+  ;; if you want to calculate a lorenz curve you need to uncomment this call
   ;update-lorenz-and-gini
-
-
 
   tick
 
@@ -84,11 +76,13 @@ to go
   ;  export-world (word "results/results " behaviorspace-experiment-name behaviorspace-run-number ".csv")
   ;  export-plot "number of patches"  (word "results/results " behaviorspace-experiment-name behaviorspace-run-number "_number-of-patches-per-decentile.csv")
   ;]
-
 end
 
+;##################################################################
+; basic model slightly adapted from 2015 Grider, R. and U. Wilensky
+;##################################################################
 ; procedure that calculate the attraction of a patch
-; adapted from the original paths model
+; adapted from the original paths model where gray above a certain limit was set to paths
 to become-more-popular
   set popularity popularity + 1
   ; if the increase in popularity takes us above the threshold, become a route
@@ -101,6 +95,8 @@ end
 
 ; procedure to control the movement of walkers
 ; adapted from the original paths model
+; the different experiments are treated
+; the setup of goals has become reason driven
 to move-walkers
   ask walkers [
     if patch-here = goal [
@@ -118,46 +114,21 @@ end
 
 ; procedure to control the popularity of patches,
 ; the destination of the next walkes step and the avoidance of obstacles
-; adapted from the original paths model
+; avoidance of obstacles has been added
 to walk-towards-goal
-    ask patch-here [ become-more-popular ]
- face best-way-to goal
+  ask patch-here [ become-more-popular ]
+  face best-way-to goal
   ifelse line-not-cone
   [avoid-patches-line]
   [avoid-patches-cone]
   fd 1
 end
 
-; procedure that calculate and perfom the decison  of the best direction
-; adapted from the original paths model
-to-report best-way-to [ destination ]
-  ; of all the visible route patches (=gray), select the ones
-  ; that would take me closer to my destination
-
-  let visible-patches patches in-radius walker-vision-dist
-  ;let visible-routes visible-patches with [popularity >= pop-lowlimit]
-  ifelse not max-pop [set visible-routes visible-patches with [
-     popularity >= pop-lowlimit]
-   ;print "1"
-  ]
-   [set visible-routes visible-patches with-max [ popularity]
-
-  ]
-  ;print [popularity] of visible-routes
-  let routes-that-take-me-closer visible-routes with [
-    distance destination < [ distance destination - 1] of myself
-  ]
-  ; decision
-  ifelse any? routes-that-take-me-closer [
-    ; from those route patches, choose the one that is the closest to me
-    report min-one-of routes-that-take-me-closer [ distance self ]
-  ] [
-    ; if there are no nearby routes to my destination
-    report destination
-  ]
-end
 
 
+; ####################################################################
+; avoiding obstacles (2 different approaches so far)
+; ####################################################################
 ; controls avoiding  barriers by line of sight and storing walkable patches to
 ; turtle own list
 to avoid-patches-line
@@ -245,35 +216,197 @@ while [count patches in-cone walker-vision-dist walker-v-angle with [obstacle = 
 
 end
 
+;#########################################################
+; reporter for analysis and decision
+;#########################################################
+; procedure that calculate and perfom the decison  of the best direction
+; adapted from the original paths model
+to-report best-way-to [ destination ]
+  ; of all the visible route patches (=gray), select the ones
+  ; that would take me closer to my destination
+
+  let visible-patches patches in-radius walker-vision-dist
+  ;let visible-routes visible-patches with [popularity >= pop-lowlimit]
+  ifelse not max-pop [set visible-routes visible-patches with [
+     popularity >= pop-lowlimit]
+   ;print "1"
+  ]
+   [set visible-routes visible-patches with-max [ popularity]
+
+  ]
+  ;print [popularity] of visible-routes
+  let routes-that-take-me-closer visible-routes with [
+    distance destination < [ distance destination - 1] of myself
+  ]
+  ; decision
+  ifelse any? routes-that-take-me-closer [
+    ; from those route patches, choose the one that is the closest to me
+    report min-one-of routes-that-take-me-closer [ distance self ]
+  ] [
+    ; if there are no nearby routes to my destination
+    report destination
+  ]
+end
+
+; checks if new paths patches are created if not stop simulation
+; according to
+to-report stopitnow
+  let stopit false
+  let resolution abs(min-pxcor) + abs(max-pxcor)
+
+  if old-gray-patches = count-of-trampling and  ticks > (100 / n-walker * resolution ) [set stopit true]
+  report stopit
+end
+; reports number of gray patches
+to-report count-of-trampling
+  report  count patches  with [popularity >= pop-lowlimit]
+end
+
+; reports number of patches with the pop-lowlimit value
+to-report count-of-popularity-minimum
+  report  count patches  with [popularity = pop-lowlimit  ]
+end
+
+; reports teh average popularity value of all patches
+to-report popularity-average
+let psum sum [popularity] of patches with [popularity >= pop-lowlimit]
+let pcount count patches with [popularity >= pop-lowlimit]
+report psum / pcount
+end
+
+;reports the maximum value of popularity
+to-report popularity-maximum
+let psum sum [popularity] of patches with-max [popularity]
+let pcount count patches with-max [popularity]
+  report psum / pcount
+end
+
+; reports the Gini Coefficient
+to-report gini-05
+  report  gini-index-reserve / count-of-trampling
+end
+
+; reports number of patches that are used without noticed to be popular
+to-report count-of-trampling-without-popularity
+   report count patches  with [popularity < pop-lowlimit and pcolor != green and pcolor != orange]
+end
+
+
+; function reports a list of the popuklarity values of all patches >= pop-lowlimit
+to-report spop
+  report sort [popularity] of patches with [popularity >=  pop-lowlimit]
+end
+
+
+; #########################################################
+; colors and paints
+; #########################################################
+;; procedure to colorize the popularity
+;; a linear approach from lowliomit to current max value is applied
+to   scale-p
+  set vis-vision false
+  if ticks > 10 [
+  let pmax max [popularity] of patches
+  ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
+  ;print pmax
+  ask patches with [pcolor != orange and pcolor != green and pcolor != red]
+  [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
+  ]
+end
+
+
+
+; rescales the color of patches if vis-pop is used
+to colorize-patches
+  set old-gray-patches count-of-trampling
+  ; for runtime scaling and graying the popularity patches
+  ask patches with[obstacle = 1][set pcolor red]
+  ifelse not vis-pop [ask patches with [popularity >= pop-lowlimit and pcolor != green and pcolor != orange and pcolor != red] [set pcolor gray]]
+  [scale-p]
+  ask patches[ if pcolor != green [
+    set currentcolor pcolor ]
+    ]
+end
+
+; creates an list of numbers to colorize the voronoi patches
+to create-colorlist
+  set available-colors shuffle filter [ c ->
+    (c mod 10 >= 3) and (c mod 10 <= 7)
+  ]  n-values 140 [ n -> n ]
+
+end
+
+; helper function to make patches with a defined condition (circle distance) also gray
+; used in create-roads
+to make-patch-gray [p]
+  ask p [ set pcolor gray]
+end
+
+; provides an simple way to draw new facilities
+to draw-world-items
+  while [mouse-down?] [
+    create-turtles 1 [
+      setxy mouse-xcor mouse-ycor
+      ask patches in-radius line-width [ set pcolor read-from-string p_color
+        if pcolor = red [set obstacle 1
+                         set streets 0]
+        if pcolor = gray [set obstacle 0
+                         set streets  1
+                         set popularity roads-pop
+        set popularity roads-pop]
+        if pcolor = green [set obstacle 0
+                         set streets  0
+                         set popularity 0]
+      ]
+      die
+    ]
+    display
+  ]
+end
+
+;; this procedure recomputes the value of gini-index-reserve
+;; and the points in lorenz-points for the Lorenz and Gini-Index plots
+to update-lorenz-and-gini
+  let sorted-popularity sort [popularity] of patches with [popularity >=  pop-lowlimit]
+  let total-popularity sum sorted-popularity
+  let popularity-sum-so-far 0
+  let index 0
+  set gini-index-reserve 0
+  set lorenz-points []
+
+  ;; now actually plot the Lorenz curve -- along the way, we also
+  ;; calculate the Gini index.
+  ;; (see the Info tab for a description of the curve and measure)
+  repeat count patches with [popularity >=  pop-lowlimit] [
+       set popularity-sum-so-far (popularity-sum-so-far + item index sorted-popularity)
+    set lorenz-points lput ((popularity-sum-so-far / total-popularity) * 100) lorenz-points
+    ;print lorenz-points
+    set index (index + 1)
+    set gini-index-reserve
+      gini-index-reserve +
+      (index / count patches with [popularity >=  pop-lowlimit]) -
+      (popularity-sum-so-far / total-popularity)
+  ]
+end
+
 ; #####################################################
 ; create experiments
-
+; #####################################################
 ; this procedure creates some static road systems
 ; road width and geometry typ is defined by the GUI
 to create-roads
    if preset-roads = "triangle" [
-   set roads patches with
-     [pxcor = -20 or pycor = 20 or pycor = pxcor - 2 ]
-  ]
+    set roads patches with [pxcor = -20 or pycor = 20 or pycor = pxcor - 2 ] ]
    if preset-roads = "square" [
-   set roads patches with
-     [pxcor = -20 or pycor = 20 or pxcor = 20 or pycor = -20]
-  ]
+    set roads patches with [pxcor = -20 or pycor = 20 or pxcor = 20 or pycor = -20] ]
    if preset-roads = "X" [
-   set roads patches with
-     [pxcor = pycor  or (-1 * pxcor) =  pycor ]
-  ]
-    ask roads
-    [ paint-p patches in-radius road-width
-             set pcolor gray
-             ]
-
+    set roads patches with [pxcor = pycor  or (-1 * pxcor) =  pycor ] ]
+  ask roads [ make-patch-gray patches in-radius road-width set pcolor gray]
   set roads patches with [pcolor = gray]
-  ask roads[ set popularity roads-pop
-             set streets 1
-  ]
+  ask roads[
+    set popularity roads-pop
+    set streets 1 ]
   display
-
 end
 
 ; this procedure creates some static road systems
@@ -320,8 +453,8 @@ to make-experiment
     ask  n-of n-walker patches [sprout-walkers 1 [
     if selected-experiment ="houseOfSantaClaus" [set goal one-of patches with [pcolor = orange]]
       set size 4
-      set color 45
-      set shape "person student"
+      set color 129
+      set shape "stud-pent"
       set color first available-colors
       set available-colors butfirst available-colors
       ]
@@ -395,53 +528,8 @@ to make-experiment
   ]
 end
 
-;#########################################################
-; reporter for analysis
 
-; checks if new paths patches are created if not stop simulation
-; according to
-to-report stopitnow
-  let stopit false
-  let resolution abs(min-pxcor) + abs(max-pxcor)
-
-  if old-gray-patches = count-of-trampling and  ticks > (100 / n-walker * resolution ) [set stopit true]
-  report stopit
-end
-; reports number of gray patches
-to-report count-of-trampling
-  report  count patches  with [popularity >= pop-lowlimit]
-end
-
-; reports number of patches with the pop-lowlimit value
-to-report count-of-popularity-minimum
-  report  count patches  with [popularity = pop-lowlimit  ]
-end
-
-; reports teh average popularity value of all patches
-to-report popularity-average
-let psum sum [popularity] of patches with [popularity >= pop-lowlimit]
-let pcount count patches with [popularity >= pop-lowlimit]
-report psum / pcount
-end
-
-;reports the maximum value of popularity
-to-report popularity-maximum
-let psum sum [popularity] of patches with-max [popularity]
-let pcount count patches with-max [popularity]
-  report psum / pcount
-end
-
-; reports the Gini Coefficient
-to-report gini-05
-  report  gini-index-reserve / count-of-trampling
-end
-
-; reports number of patches that are used without noticed to be popular
-to-report count-of-trampling-without-popularity
-   report count patches  with [popularity < pop-lowlimit and pcolor != green and pcolor != orange]
-end
-
-; calls the help text not implemented yet
+; calls the help text
 to help
 
   user-message (word "Quick Help\n"
@@ -474,85 +562,6 @@ to help
   "|| remove walkers || does it truly and forever!\n"
 
   )
-end
-
-;; this procedure recomputes the value of gini-index-reserve
-;; and the points in lorenz-points for the Lorenz and Gini-Index plots
-to update-lorenz-and-gini
-  let sorted-popularity sort [popularity] of patches with [popularity >=  pop-lowlimit]
-  let total-popularity sum sorted-popularity
-  let popularity-sum-so-far 0
-  let index 0
-  set gini-index-reserve 0
-  set lorenz-points []
-
-  ;; now actually plot the Lorenz curve -- along the way, we also
-  ;; calculate the Gini index.
-  ;; (see the Info tab for a description of the curve and measure)
-  repeat count patches with [popularity >=  pop-lowlimit] [
-       set popularity-sum-so-far (popularity-sum-so-far + item index sorted-popularity)
-    set lorenz-points lput ((popularity-sum-so-far / total-popularity) * 100) lorenz-points
-    ;print lorenz-points
-    set index (index + 1)
-    set gini-index-reserve
-      gini-index-reserve +
-      (index / count patches with [popularity >=  pop-lowlimit]) -
-      (popularity-sum-so-far / total-popularity)
-  ]
-end
-
-; function reports a list of the popuklarity values of all patches >= pop-lowlimit
-to-report spop
-  report sort [popularity] of patches with [popularity >=  pop-lowlimit]
-end
-
-
-;; procedure to colorize the popularity
-;; a linear approach from lowliomit to current max value is applied
-to   scale-p
-  set vis-vision false
-  if ticks > 10 [
-  let pmax max [popularity] of patches
-  ;if pmax < pop-lowlimit [set pmax pop-lowlimit + pop-lowlimit]
-  ;print pmax
-  ask patches with [pcolor != orange and pcolor != green and pcolor != red]
-  [ set pcolor scale-color magenta popularity pop-lowlimit pmax ]
-  ]
-end
-
-
-;#########################################################
-to create-colorlist
-  set available-colors shuffle filter [ c ->
-    (c mod 10 >= 3) and (c mod 10 <= 7)
-  ]  n-values 140 [ n -> n ]
-
-end
-
-to paint-p [p]
-  ask p [ set pcolor gray]
-end
-
-; provides an simple way to draw new facilities
-to draw-world-items
-  while [mouse-down?] [
-    create-turtles 1 [
-      setxy mouse-xcor mouse-ycor
-      ask patches in-radius line-width [ set pcolor read-from-string p_color
-        if pcolor = red [set obstacle 1
-                         set streets 0]
-        if pcolor = gray [set obstacle 0
-                         set streets  1
-                         set popularity roads-pop
-        set popularity roads-pop]
-        if pcolor = green [set obstacle 0
-                         set streets  0
-                         set popularity 0]
-      ]
-      die
-    ]
-    display
-  ]
 end
 
 
@@ -631,7 +640,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-71.0
+200.0
 1
 1
 NIL
@@ -684,7 +693,7 @@ n-walker
 n-walker
 1
 100
-10.0
+1.0
 1
 1
 NIL
@@ -712,7 +721,7 @@ SWITCH
 343
 vis-vision
 vis-vision
-1
+0
 1
 -1000
 
@@ -992,6 +1001,7 @@ NIL
 NIL
 NIL
 1
+
 BUTTON
 325
 215
@@ -1008,6 +1018,7 @@ NIL
 NIL
 NIL
 1
+
 BUTTON
 325
 135
@@ -1024,6 +1035,7 @@ NIL
 NIL
 NIL
 1
+
 BUTTON
 210
 55
@@ -1040,6 +1052,7 @@ NIL
 NIL
 NIL
 1
+
 SLIDER
 15
 340
@@ -1055,7 +1068,6 @@ line-width
 NIL
 HORIZONTAL
 
-
 SWITCH
 10
 290
@@ -1063,26 +1075,37 @@ SWITCH
 323
 line-not-cone
 line-not-cone
-1
+0
 1
 -1000
 
-
 @#$#@#$#@
 ## _Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß<sup>*</sup>_ - Selbstorganisation von Trampelpfaden im Raum
+
 Rieke Ammoneit und Chris Reudenbach 2020
+
 ## Einleitung
+
 Räumlich agiernde Akteure müssen eben diese Räume nutzen und erschließen. Geschieht diese Nutzung regelmäßig entstehen Wege. Diese erleichtern und optimieren, sei es operationalisiert in Form von Strassen und befestigten Wegen oder ungeregelt als Trampelpfade, Steige o.ä., die Nutzung des erdgebundenen Raumes. Wo es keine regelhafte Infrastruktur gibt, geschieht dies durch gemeinschaftliche Nutzung oder um es mit dem spanischen Dichter Antonio Machado auszudrücken: _"Wanderer, es gibt keine Straße, man macht seinen Weg zu Fuß"_ [Machado 1917].
+
 Folgt man Helbig (Helbing 1997) gibt es über die verschiedensten Disziplinen etwa der Stadtplanung, Verkehrsplanung, Archäologie, Geographie und Systemforschung ein breites Interesse an einem vertieften Verständis dieses Prozesses. Die Abstraktion solcher Systeme und die daraus abgeleitete Modellbildung kann theoretisch in der Selbstorganisation von Systemen und den daraus enstehenden ermergenten Strukturen begründet werden (Luhmann 1984). Einfach ausgedrückt enstehen Wege (wie Senor Machado sagt) durch die Wechselwirkung des Akteurs und seinen Bewegungsabsichten mit einem gegebenen Raum.
+
 Gerade im planerischen Umfeld so z.B. bei Neu- oder Umplanunge von Stadtteilen, Parks etc. stellt sich häufig die Frage nach _guten_ oder _organischen_ Wegen [Molnar 1995, Schenk 1999 Schaber 2006]. Als _gute_ Wege sollen in diesem Kontext Wege bezeichnet werden, die von den Fussgängern und anderen Nutzern des Raumes angenommen und aktiv genutzt werden. Sind regulär solche Wege nicht verfügbar oder werden als nicht nützlich empfunden, enstehen häufig _wilde_ Wege also **Trampelpfade**, da Akteure diese Wege nutzen und durch eine unabgesprochene gemeinsame Bevorzugung häufig begangener Strecken diese zu einem Weg stabilisieren. 
+
 In der vorliegenden Studie soll die spontane Entstehung von Trampelpfaden in einem einfachen isomorphen Raum untersucht werden. Insbsondere ob und inwieweit die Anazhl und die Wahrnehmungsfähigkeit der Akteure eine Auswirkung auf die entstehenden Wegemuster haben. Hierzu sind insbesondere Modellsysteme wie NetLogo geeignet, da sie einen einfachen softwarebasierten Zugang zur Programmierung Und Validierung agentenbasierter Prozesse im Raum bieten (Uhrmacher & Weyns 2009, Gilbert & Bankes 2002, Wilensky 1999).
+
 ## Fragestellung und Hypothese
 Die einleitend dagestellte, grundlegende  Beobachtung, dass Trampelpfade entlang gemeinsam zurückgelegter Routen selbstorganisert entstehen wird durch die Neigung begründet, Wege zwischen einem _Hier_ und  _Dort_ zu optimieren. Es wird zudem beobachtet, dass weitere Akteure, sobald solche Spuren sichtbar sind, dazu neigen diese  zu nutzen, was wierderum die Sichtbarkeit der Trittspuren erhöht (vgl. Molnar 1997, Helbing 1997). Aus den den einzelnen Trittspuren werden dann Trampelpfade die scheinbar spezifischen Regeln folgen. Die konkrete Frage dieser Untersuchung lautet also: Entstehen Wege aus der Neigung der Nutzer bereits sichtbare Trittmuster zu nutzen und inwieweit ist es von der Wahrnehmung der Nutzer abhängig wie die Struktur der Wege ist?
+
 Zur Untersuchung werden folgende Hypothesen aufgestellt:
+
 1. Orientieren sich die Akteure an der Höhe der Popularität eines Trampelpfadpatches, dann (1) sind die Verbindungen zwischen Zielen kürzer, (2) es entstehen mehr direkte Punkt zu Punkt Wege und es entstehen weniger Trampelpfadpatches als bei der Orientierung an beliebigen Trampelpfadpatches. 
+
 2. Je weitreichender die Wahrnehmung der Akteure ist, desto (1) stärker konvergieren Wege zu gemeinsam genutzten Pfaden mit (2) insgesamt mehr Nebenpfaden und (3) mehr Trampelpfadpatches als unter (1)
+
 ## Methoden
 Zur Abstraktion und Modellbildung wird aus obiger Fragestellung folgendes **Wortmodell** aufgestellt (Bossel 2004):
+
     "Bei zufällig gegebenen festen Zielen in einem isomorphen Raum wird auf einer
      approximativ linearen (direkten) Verbindung zwischen diesen Zielen durch wiederholte
      Benutzung der gleichen Trittpatches ein Trampelpfad enstehen. Dieser direkte Weg
@@ -1090,28 +1113,45 @@ Zur Abstraktion und Modellbildung wird aus obiger Fragestellung folgendes **Wort
      dem Weg zum Ziel zu nutzen zunimmt. Je mehr dieser Wegstücke verfügbar sind und
      eingesehen werden können, desto stäker wird eine Veränderung der geraden Wege zu
      eher bogenförmig oder gekrümmten Wegen stattfinden."
+
 ### Rahmenbedingungen des Modelllaufs
+
 Die Hypothesenüberprüfung soll mit Hilfe einer iterativen Veränderung der relevanten Parameter Sichtweite und Poularitätsgewichtung erfolgen. Hierfür ist grundsätzlich der Ansatz einer Sensitivitätsstudie geeignet (Thiele et al. 2014). Bei Anwendung einer systematischen Untersuchung werden reproduzierbare Raumbedingnen (siehe Abbildung 1) mit einer vollständigen Kombinationen verschiedener Akteurseinstellungen in definierter Anzahl wiederholt. Erwartet wird, dass zu den jeweiligen Paramterkombinationen spezifische und vegleichbare Raumstrukturen entstehen.
+
 ### Ziele und  Raum
 Der Akteursraum wird durch die Positioniereung der Scheitelpunkte eines auf einer isomorphen Fläche (grün) leicht rotierten gleichseitigen Dreiecks (vgl. a. Helbing (1997)) gebildet (siehe Abbildung 1).
+
 ![Räumliche Positionen des Experiments Dreieck.](images/abb1.png)
 Abbildung 1: Räumliche Positionen des Experiments. Die orangen Scheitelpunkte des  Dreiecks (rot eingekreist) sind die wechselseitig zugelosten Ziele. Grüne Flächen sind Grünland. Trittspuren und Agenten sind nicht gezeigt.
+
 ### Regeln aus dem Wortmodell
 Aus dem obigen Wortmodell werden die folgenden Regeln abgeleitet:
+
 #### Die Akteure (walkers) agieren nach den folgenden Regeln:
+
 * haben immer ein bekanntes Ziel
 * versuchen dieses Ziel auf direktem Weg zu erreichen
 * identifizieren, je Schritt, ob eine Trittspur in Richtung zum Ziel erkennbar ist
 * falls ja und so der Weg zum Ziel verkürzt wird, wählen sie die Richtung auf eine dieser Trittspuren 
+
 #### Die Raumeinheiten (patches) haben die folgenden Eigenschaften:
+
 * Nutzung (Grünland [grün], Trittspur [grau je nach popularity], Ziel [orange])
+
 #### Folgende Interaktion (Prozesse) finden statt:
+
 * Die Anziehungskraft (_popularity_) einer Trittspur wird bei jedem Betreten durch einen Akteur um einen Punkt aufgewertet. Ab einem definierten Schwellwert der _popularity_ wird aus Grünland eine sichtbare Trittspur.
+
+
 ### Das Netlogo Modell 
 Das entwickelte NetLogo Modell  _"paths-simulater-2019"_  ist eine Weiterentwicklung des NetLogo-Library-Modells _"paths"_ (Grider & Wilensky 2015). Die dort implementierte Optimierungsfunktion zur Wegfindung (_best-way-to_) wurde um die Funktionalität nach maximaler Popularität zu selektieren erweitert. Der Algorithmus analysiert die Distanz zum Ziel und innerhalb eines definierten Sichtradius die Distanz zu einem Trittpach das den Weg zum Ziel verkürzt (falls vorhanden). Im Falle eines vorhandnen Trittpatchs wird dieses angesteuert. Für die vorliegende Untersuchung wurden darüberhinaus das in Abbildung 1 gezeigte Ziel-Szenario _Y_ in Anlehnung an Helbing (1997) Raumsetting implementiert und verwendet (vgl. Abbildung 1). 
+
 Zur praktischen Umsetzung wird das Behaviour-Space-Werkzeug der NetLogo Programmierumgebung verwendet. Die in diese Modelldatei integrierten Behaviour-Space Skripte _"run_1_2_Y"_, _"run_3_4_Y"_ und _"run_5-7_Y"_ starten insgesamt 35 Modelläufe, die die Grundlage der Untersuchung darstellen. (vgl. Tabelle 1).
+
 Die Simulationen werden je Szenario in 5-facher Wiederholung mit je zehn zufällig in der Modellwelt eingesetzten Akteuren durchgeführt. Die Akteure streben den ebenfalls jeweils zufällig zugelosten Zielpunkten zu. Bei Erreichen erfolgt eine Neulosung des nächsten Zieles. Für die genauen Einstellung je Simulation sei auf den Behaviour Space verwiesen.
+
 Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wiederholt. Siehe auch Abbildungspanel 2, 3 und 4.
+
 <table  style="width:90%">
     <tr>
         <td><b></td>
@@ -1154,15 +1194,28 @@ Tabelle 1: Matrix der Modellaufparameter. Jeder Modellauf (run) wurde 5-fach wie
          <td>true</td>
     </tr>
 </table>
+
+
+
+
 ## Ergebnisse 
 Die Simulationsläufe wurden über 2500 Zeitschritte iteriert und dann abgebrochen. In allen Modelläufen enstanden zu dieser Laufzeit keine neuen Wegstrukturen. 
+
 Da in _run\_1 und _run\_2_ gut erkennbar ist, dass die grundsätzlichen Muster der patches mit einer _Popularity_ > _min-poplimit_  qualitativ übereinstimmend sind, werden exemplarisch die in Tabelle 1 gelisteten Läufe (runs) gezeigt. Dies vernachlässigt die Beobachtung, dass bei wenigen Akteuren und einer eingeschränkten Sicht (siehe _run\_3_) zwar qualitativ ähnliche und vergleichbare Muster enstehen, diese jedoch in der endgültigen Ausprägung und vor allem räumlichen Lage sehr varierend sind. Dieser räumliche Effekt ist der initialen Verteilung der Akteure geschuldet und es darf angenommen werden, dass bei einer gleichmässigen Verteilung im Raum die Muster auch für Läufe mit eingeschränkterer Wahrnehmung räumlich stabil bleiben.  
+
 ### Modelläufe 1 und 2 - Fokussierte Orientierung
+
 In Abbildungspanel 2 sind _run\_1_ und _run\_2_ (vgl. Tabelle 1) dargestellt. Beide Läufe sind mit einer minimalen _walker-vis-dist_  mit dem Wert **1** durchgeführt worden. Gut zu erkennen sind die zwischen den Zielpunkten faktisch linearen und identischen Pfadmuster für Betretungshäufigkeiten größer des _min-poplimit_-Schwellenwertes. Auch gut zu erkennen ist die Verteilung der _popularity_, die einen massiven Peak im ersten Dezil aufweist und dann im 7 bis 9 Dezil einen leichten zweiten Peak produziert. Der erste Peak wird von den selten betretenen Patches erzeugt während der zweite Peak durch die Patches mit hohen (die Wege selber) aber nicht den höchsten (vor den Umkehrpunkten und "Eckentrittpatches" auf den Wegen) _popularity_-Werten der Patches gebildet wird. 
+
 ![Modellläufe 1 und 2]( images/abb2.png)
+
 Abbildung 2: Modelllauf 1 und 2 mit : walker-vision-dist = 1, n-walkers = 10/50, max-pop = false, Wiederholungsläufe 1-5. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+
 Die schwarz visualisierten Patches weisen eine Betretunghäufigkeit gleich des _min-poplimit_-Schwellenwertes aus. Sie markieren vor allem den Weg des walkers zum ersten Ziel. Es kann (eine Wiederholung >> 5 vorausgesetzt) erwartet werden, dass dieser Anteil im Verhältnis zu den patches mit einer _popularity_ größer des _min-poplimit_-Schwellenwertes sich über viele Simulationen stabilisiert und ähnlich ist. Allerdings ist auch hier die Abhängigkeit von der initialen räumlichen Verteilung der Akteure ersichtlich. Diese Ahnahme bestätigen eingeschränkt die Quotienten des Verhältnis von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ 
+
 Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _popularity > min-poplimit_ (pop-ratio)
+
+
 <table style="width:90%">
     <tr>
         <td><b></td>
@@ -1190,19 +1243,38 @@ Tabelle 2: Matrix der Quotienten von _popularity = min-poplimit_ **/** _populari
         <td>0.578</td>
     </tr>
 </table>
+
 ### Modelläufe 3 und 4 - Flexible Orientierung 
+
 In Abbildungspanel 3 sind _run\_3_ und _run\_4_ (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die erweiterte Wahrnehmung der walker (siehe Tabelle 1). Gut zu erkennen sind die für Betretungshäufigkeiten größer des _min-poplimit_-Schwellenwertes zwischen den Zielpunkten deutlich gekrümmten und aufgespreizten Trampelpfade. Vor allem im _run\_3_ fällt die Variabilität des Hauptmusters auf. Hier ist die Reichweite der _walker-vis-dist_  mit 25 deutlich eingeschränkter als im _run\_4_ (50). Daher sind die resultierenden Muster abhängiger von der initialen Verteilung der Akteure. Im _run\_4_ ist dieses Muster dank der größeren Reichweite der _walker-vis-dist_ sichtbar stabiler und unabhängiger von der Erstverteilung der Akteure im Raum. Auch gut zu erkennen ist die Verteilung der _popularity_-Werte, die anders als zuvor in den ersten 3 Dezilen eine Häufung von Patches aufweist und dann quasi exponentiell abfällt. Die starke linksschiefe Verteilung wird durch das Aufspreizen der Wege und die hierdurch bedingte langsame Zunahme der Patches mit höherer Popularität erzeugt.
+
 ![Modellläufe 3 und 4]( images/abb3.png)
+
 Abbildung 3: Modelllauf 3 und 4 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _gleich min-poplimit_ häufig betreten worden. _Größer min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+
+
+
+
 ### Modelläufe 5 - 7 - Fokussierte Orientierung auf maximale Popularität 
+
 In Abbildungspanel 4 sind _run\_5 bis _run\_7 (vgl. Tabelle 1) dargestellt. Die Läufe unterscheiden sich durch die schrittweise erweiterte Wahrnehmung der walkers und ihrer Orientierung an Patches mit einer *maximalen* Popularität (siehe Tabelle 1). Die Läufe unterscheiden sich recht deutlich von den zuvor gezeigten Simulationen. Während _run\_5 erwartungsgemäß und bedingt durch die Bedingung _walker-vis-dist = 1_  als prinzipiell identisch mit _run\_1_ betrachtet werden kann, weichen die Läufe _run\_5_ und _run\_7_ erheblich von den vergleichbaren _walker-vis-dist_-Simulationen mit nicht optimierter Fokussierung auf maximale Popularität ab. Zunächst zeigen sich wie bei _run\_1_ und _run\_6_ als Hauptmuster eindeutig die linearen Optimierungspfade zwischen den Zielen die entsprechend hohe Popularitätswerte aufweisen. Betrachtet man aber vor allem den _run\_6_ zeigt sich, dass  wenig oder nur einmalig benutzte Parallel-Pfade zu den optimierten Hauptpfaden entstanden sind. Sehr stark tritt dies in _run\_6 #1-3_ und _run\_7 #2/#4_ hervor. 
+
 ![Modellläufe 5 - 7]( images/abb4.png)
+
 Abbildung 4: Modelllauf 5 -7 für die Einstellungen siehe Tabelle 1. Schwarze Patches sind _= min-poplimit_ häufig betreten worden. Größer _min-poplimit_ wird die Farbe Magenta bis weiss je nach Wertebereich von _maximum-popularity_ skaliert.
+
 ## Diskussion
+
 Betrachtet man die Ergebnisse vor dem Hintergrund der gestellten Hypothesen so können folgende Schlüsse gezogen werden: 
+
 Hypothese 1 wurde mit den Modellläufen _run\_1, run\_5, run\_6, run\_7_ untersucht. In _run\_1_  und _run\_5 war die Wahrnehmung maximaler Popularität nicht eingestellt, allerdings wirkt die Wahrnehmungreichweite von **1** der walker, im Zusammenhang mit der zu jedem Zeitschritt aktiven Zielausrichtung, in vergleichbarer Weise. Die Läufe run\_6_ und _run\_7_  hingegen zeigen eindeutig lineare Optimierungsmuster, die bei mittlerer Wahrnehmungsreichweite deutlicher sichtbar werden als bei höherer Reichweite. Alle Varianten führen zu linearen und, falls für das Optimierungsverhalten notwendig, parallelen Wegstrukturen, die hinsichtlich der Entfernung optimiert kurz sind. Folglich kann Hypothese 1 sowohl hinsichtlich der Kürze der Wegstrecke als auch der Häufung von direkten Punkt-zu-Punkt Wegen bestätigt werden
+
 Mit den Läufen _run\_3_ und _run\_4_ kann gezeigt werden, dass abhängig von der Anzahl der für die Akteure sichtbaren Trittpatches, gekrümmte und breitere Wege entstehen. Diese Wege sind nicht hinsichtlich ihrer Distanz zwischen den Zielpunkten optimiert. Ihre Lage im Raum ist offensichtlich von der zufälligen Erstverteilung der Akteure abhängig (_run\_3_) und wird mit zunehmender Wahrnehmungsreichweite bzw. Anzahl der Akteure stabiler reproduzierbar (_run\_4_). Aufgrund dieser Beobachtung kann auch Hypothese 2 bestätigt werden, da mit zunehmender Wahrnehmung die Trampelpfade stärker konvergieren und zu gemeinsam genutzten Pfaden, zusätzlichen Nebenpfaden und weiteren Pfadstrukturen ausgebaut werden.
+
 Auf Grundlage dieser Beobachtungen kann geschlossen werden, dass das vorliegende Modell in der Lage ist, die, auch von anderen Autoren (vgl. Molnar 1997, Helbing 1997) beobachteten, Strukturen zuverlässig wiederzugeben und als Grundlage für weitere Fragestellungen wie etwa Barrieren oder komplexere Raumstrukturen geeignet erscheint.
+
+
+
 ## Referenzen 
 1. Bossel, H, (2004), Systeme, Dynamik, Simulation : Modellbildung, Analyse und Simulation komplexer Systeme. Norderstedt, Books on Demand GmbH.
 1. Feistel,R. & Ebeling, W. (1989), Evolution of Complex Systems. Self-Organization, Entropy and Development. Kluwer, Dordrecht,1989.
@@ -1220,26 +1292,35 @@ Auf Grundlage dieser Beobachtungen kann geschlossen werden, dass das vorliegende
 1. Thiele J. C., Kurtha W. & V. Grimm (2014), Facilitating Parameter Estimation and Sensitivity Analysis of Agent-Based Models: A Cookbook Using NetLogo and R, Journal of Artificial Societies and Social Simulation 17 (3) 11, [URL](http://jasss.soc.surrey.ac.uk/17/3/11.html), [DOI](DOI:10.18564/jasss.2503), Zugriff: 28.01.2020
 1. Uhrmacher A. M. & D. Weyns (2009), Multi-Agent Systems: Simulation and Applications. (CRC Press, Inc., Boca Raton, FL, USA, 7.
 1. Wilensky, U. (1999). NetLogo. (http://ccl.northwestern.edu/netlogo/), Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+
 ## COPYRIGHT AND LICENSE
 The above Text and the implementation of the current model is under Copyright of Rieke Ammoneit and Chris Reudenbach
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/de/"><img alt="Creative Commons Lizenzvertrag" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/de/88x31.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/de/">Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 3.0 Deutschland Lizenz</a>.
+
+
 All parts from Netlogo used library models have Copyright 2015 Uri Wilensky.
+
 ![CC BY-NC-SA 3.0](http://ccl.northwestern.edu/images/creativecommons/byncsa.png)
+
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+
 Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
 @#$#@#$#@
 default
 true
 0
 Polygon -7500403 true true 150 5 40 250 150 205 260 250
+
 airplane
 true
 0
 Polygon -7500403 true true 150 0 135 15 120 60 120 105 15 165 15 195 120 180 135 240 105 270 120 285 150 270 180 285 210 270 165 240 180 180 285 195 285 165 180 105 180 60 165 15
+
 arrow
 true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
+
 box
 false
 0
@@ -1249,6 +1330,7 @@ Polygon -7500403 true true 15 75 15 225 150 285 150 135
 Line -16777216 false 150 285 150 135
 Line -16777216 false 150 135 15 75
 Line -16777216 false 150 135 285 75
+
 bug
 true
 0
@@ -1257,6 +1339,7 @@ Circle -7500403 true true 110 127 80
 Circle -7500403 true true 110 75 80
 Line -7500403 true 150 100 80 30
 Line -7500403 true 150 100 220 30
+
 butterfly
 true
 0
@@ -1268,6 +1351,7 @@ Polygon -16777216 true false 150 255 135 225 120 150 135 120 150 105 165 120 180
 Circle -16777216 true false 135 90 30
 Line -16777216 false 150 105 195 60
 Line -16777216 false 150 105 105 60
+
 car
 false
 0
@@ -1277,29 +1361,35 @@ Circle -16777216 true false 30 180 90
 Polygon -16777216 true false 162 80 132 78 134 135 209 135 194 105 189 96 180 89
 Circle -7500403 true true 47 195 58
 Circle -7500403 true true 195 195 58
+
 circle
 false
 0
 Circle -7500403 true true 0 0 300
+
 circle 2
 false
 0
 Circle -7500403 true true 0 0 300
 Circle -16777216 true false 30 30 240
+
 cow
 false
 0
 Polygon -7500403 true true 200 193 197 249 179 249 177 196 166 187 140 189 93 191 78 179 72 211 49 209 48 181 37 149 25 120 25 89 45 72 103 84 179 75 198 76 252 64 272 81 293 103 285 121 255 121 242 118 224 167
 Polygon -7500403 true true 73 210 86 251 62 249 48 208
 Polygon -7500403 true true 25 114 16 195 9 204 23 213 25 200 39 123
+
 cylinder
 false
 0
 Circle -7500403 true true 0 0 300
+
 dot
 false
 0
 Circle -7500403 true true 90 90 120
+
 face happy
 false
 0
@@ -1307,6 +1397,7 @@ Circle -7500403 true true 8 8 285
 Circle -16777216 true false 60 75 60
 Circle -16777216 true false 180 75 60
 Polygon -16777216 true false 150 255 90 239 62 213 47 191 67 179 90 203 109 218 150 225 192 218 210 203 227 181 251 194 236 217 212 240
+
 face neutral
 false
 0
@@ -1314,6 +1405,7 @@ Circle -7500403 true true 8 7 285
 Circle -16777216 true false 60 75 60
 Circle -16777216 true false 180 75 60
 Rectangle -16777216 true false 60 195 240 225
+
 face sad
 false
 0
@@ -1321,6 +1413,7 @@ Circle -7500403 true true 8 8 285
 Circle -16777216 true false 60 75 60
 Circle -16777216 true false 180 75 60
 Polygon -16777216 true false 150 168 90 184 62 210 47 232 67 244 90 220 109 205 150 198 192 205 210 220 227 242 251 229 236 206 212 183
+
 fish
 false
 0
@@ -1329,6 +1422,7 @@ Polygon -1 true false 135 195 119 235 95 218 76 210 46 204 60 165
 Polygon -1 true false 75 45 83 77 71 103 86 114 166 78 135 60
 Polygon -7500403 true true 30 136 151 77 226 81 280 119 292 146 292 160 287 170 270 195 195 210 151 212 30 166
 Circle -16777216 true false 215 106 30
+
 flag
 false
 0
@@ -1336,6 +1430,7 @@ Rectangle -7500403 true true 60 15 75 300
 Polygon -7500403 true true 90 150 270 90 90 30
 Line -7500403 true 75 135 90 135
 Line -7500403 true 75 45 90 45
+
 flower
 false
 0
@@ -1352,6 +1447,7 @@ Circle -7500403 true true 96 51 108
 Circle -16777216 true false 113 68 74
 Polygon -10899396 true false 189 233 219 188 249 173 279 188 234 218
 Polygon -10899396 true false 180 255 150 210 105 210 75 240 135 240
+
 house
 false
 0
@@ -1359,23 +1455,28 @@ Rectangle -7500403 true true 45 120 255 285
 Rectangle -16777216 true false 120 210 180 285
 Polygon -7500403 true true 15 120 150 15 285 120
 Line -16777216 false 30 120 270 120
+
 leaf
 false
 0
 Polygon -7500403 true true 150 210 135 195 120 210 60 210 30 195 60 180 60 165 15 135 30 120 15 105 40 104 45 90 60 90 90 105 105 120 120 120 105 60 120 60 135 30 150 15 165 30 180 60 195 60 180 120 195 120 210 105 240 90 255 90 263 104 285 105 270 120 285 135 240 165 240 180 270 195 240 210 180 210 165 195
 Polygon -7500403 true true 135 195 135 240 120 255 105 255 105 285 135 285 165 240 165 195
+
 line
 true
 0
 Line -7500403 true 150 0 150 300
+
 line half
 true
 0
 Line -7500403 true 150 0 150 150
+
 pentagon
 false
 0
 Polygon -7500403 true true 150 15 15 120 60 285 240 285 285 120
+
 person
 false
 0
@@ -1384,6 +1485,7 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
+
 person business
 false
 0
@@ -1400,6 +1502,7 @@ Polygon -14835848 true false 180 226 195 226 270 196 255 196
 Polygon -13345367 true false 209 202 209 216 244 202 243 188
 Line -16777216 false 180 90 150 165
 Line -16777216 false 120 90 150 165
+
 person construction
 false
 0
@@ -1420,6 +1523,7 @@ Rectangle -16777216 true false 135 174 150 180
 Polygon -955883 true false 105 42 111 16 128 2 149 0 178 6 190 18 192 28 220 29 216 34 201 39 167 35
 Polygon -6459832 true false 54 253 54 238 219 73 227 78
 Polygon -16777216 true false 15 285 15 255 30 225 45 225 75 255 75 270 45 285
+
 person doctor
 false
 0
@@ -1438,6 +1542,7 @@ Line -16777216 false 180 15 120 15
 Line -16777216 false 150 195 165 195
 Line -16777216 false 150 240 165 240
 Line -16777216 false 150 150 165 150
+
 person farmer
 false
 0
@@ -1452,6 +1557,7 @@ Line -16777216 false 225 15 225 90
 Line -16777216 false 270 15 270 90
 Line -16777216 false 247 15 247 90
 Rectangle -6459832 true false 240 90 255 300
+
 person graduate
 false
 0
@@ -1469,6 +1575,7 @@ Circle -1 true false 104 205 20
 Circle -1 true false 41 184 20
 Circle -16777216 false false 106 206 18
 Line -2674135 false 208 22 208 57
+
 person lumberjack
 false
 0
@@ -1495,6 +1602,7 @@ Line -16777216 false 180 105 210 180
 Line -16777216 false 120 105 90 180
 Line -16777216 false 150 135 150 165
 Polygon -2674135 true false 100 30 104 44 189 24 185 10 173 10 166 1 138 -1 111 3 109 28
+
 person police
 false
 0
@@ -1517,6 +1625,7 @@ Polygon -1184463 true false 175 6 194 6 189 21 180 21
 Line -1184463 false 149 24 197 24
 Rectangle -16777216 true false 101 177 122 187
 Rectangle -16777216 true false 179 164 183 186
+
 person service
 false
 0
@@ -1536,6 +1645,7 @@ Polygon -2674135 true false 120 90 105 90 114 161 120 195 150 195 150 135 120 90
 Polygon -2674135 true false 155 91 128 77 128 101
 Rectangle -16777216 true false 118 129 141 140
 Polygon -2674135 true false 145 91 172 77 172 101
+
 person soldier
 false
 0
@@ -1555,6 +1665,7 @@ Polygon -6459832 true false 122 4 107 16 102 39 105 53 148 34 192 27 189 17 172 
 Polygon -16777216 true false 183 90 240 15 247 22 193 90
 Rectangle -6459832 true false 114 187 128 208
 Rectangle -6459832 true false 177 187 191 208
+
 person student
 false
 0
@@ -1569,6 +1680,7 @@ Polygon -1 true false 120 224 131 225 124 210
 Line -13840069 false 139 168 126 225
 Line -16777216 false 140 167 76 136
 Polygon -7500403 true true 105 90 60 195 90 210 135 105
+
 plant
 false
 0
@@ -1580,6 +1692,7 @@ Polygon -7500403 true true 165 180 165 210 225 180 255 120 210 135
 Polygon -7500403 true true 135 105 90 60 45 45 75 105 135 135
 Polygon -7500403 true true 165 105 165 135 225 105 255 45 210 60
 Polygon -7500403 true true 135 90 120 45 150 15 180 45 165 90
+
 rabbit
 false
 0
@@ -1597,6 +1710,7 @@ Line -16777216 false 180 210 165 180
 Line -16777216 false 165 180 180 165
 Line -16777216 false 180 165 225 165
 Line -16777216 false 180 210 210 240
+
 sheep
 false
 15
@@ -1612,15 +1726,18 @@ Rectangle -1 true true 65 221 80 296
 Polygon -1 true true 195 285 210 285 210 240 240 210 195 210
 Polygon -7500403 true false 276 85 285 105 302 99 294 83
 Polygon -7500403 true false 219 85 210 105 193 99 201 83
+
 square
 false
 0
 Rectangle -7500403 true true 30 30 270 270
+
 square 2
 false
 0
 Rectangle -7500403 true true 30 30 270 270
 Rectangle -16777216 true false 60 60 240 240
+
 squirrel
 false
 0
@@ -1636,10 +1753,28 @@ Line -16777216 false 91 268 131 290
 Line -16777216 false 220 82 213 79
 Line -16777216 false 286 126 294 128
 Line -16777216 false 193 284 206 285
+
 star
 false
 0
 Polygon -7500403 true true 151 1 185 108 298 108 207 175 242 282 151 216 59 282 94 175 3 108 116 108
+
+stud-pent
+false
+0
+Polygon -13791810 true false 135 90 150 105 135 165 150 180 165 165 150 105 165 90
+Polygon -7500403 true true 188 96 293 51 308 81 203 126
+Circle -7500403 true true 117 27 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -7500403 true true 120 90 135 195 105 285 120 300 150 300 165 225 180 300 210 300 225 285 195 195 210 90
+Polygon -7500403 true true 122 94 77 199 107 214 152 109
+Polygon -7500403 false true 60 150
+Polygon -1184463 false false 60 45 0 120 0 225 120 225 120 120 60 45
+Polygon -2674135 true false 115 65 196 44 162 -4 148 18 130 4
+Polygon -2674135 true false 168 119 195 90 270 60 285 94 212 124 240 255 180 270 150 270 105 255 90 255 135 165 135 165 113 196 85 179 120 90
+Polygon -1184463 false false 67 46 7 121 7 226 127 226 127 121 67 46
+Polygon -1184463 false false 60 45 0 120 0 225 120 225 120 120 60 45
+
 stud-square
 false
 0
@@ -1652,6 +1787,7 @@ Polygon -7500403 true true 105 90 60 195 90 210 135 105
 Polygon -7500403 false true 60 150
 Polygon -1184463 false false 285 105 285 210 180 210 180 105
 Rectangle -1184463 false false 184 109 281 209
+
 stud_tri
 false
 0
@@ -1664,6 +1800,7 @@ Polygon -7500403 true true 105 90 60 195 90 210 135 105
 Polygon -7500403 false true 60 150
 Polygon -1184463 false false 0 180 75 90 150 210 0 180
 Polygon -1184463 false false 8 178 75 97 144 208
+
 target
 false
 0
@@ -1672,6 +1809,7 @@ Circle -16777216 true false 30 30 240
 Circle -7500403 true true 60 60 180
 Circle -16777216 true false 90 90 120
 Circle -7500403 true true 120 120 60
+
 tree
 false
 0
@@ -1681,6 +1819,7 @@ Circle -7500403 true true 65 21 108
 Circle -7500403 true true 116 41 127
 Circle -7500403 true true 45 90 120
 Circle -7500403 true true 104 74 152
+
 tree pine
 false
 0
@@ -1688,15 +1827,18 @@ Rectangle -6459832 true false 120 225 180 300
 Polygon -7500403 true true 150 240 240 270 150 135 60 270
 Polygon -7500403 true true 150 75 75 210 150 195 225 210
 Polygon -7500403 true true 150 7 90 157 150 142 210 157 150 7
+
 triangle
 false
 0
 Polygon -7500403 true true 150 30 15 255 285 255
+
 triangle 2
 false
 0
 Polygon -7500403 true true 150 30 15 255 285 255
 Polygon -16777216 true false 151 99 225 223 75 224
+
 truck
 false
 0
@@ -1711,6 +1853,7 @@ Circle -16777216 true false 24 174 42
 Circle -7500403 false true 24 174 42
 Circle -7500403 false true 144 174 42
 Circle -7500403 false true 234 174 42
+
 turtle
 true
 0
@@ -1720,6 +1863,7 @@ Polygon -10899396 true false 105 90 75 75 55 75 40 89 31 108 39 124 60 105 75 10
 Polygon -10899396 true false 132 85 134 64 107 51 108 17 150 2 192 18 192 52 169 65 172 87
 Polygon -10899396 true false 85 204 60 233 54 254 72 266 85 252 107 210
 Polygon -7500403 true true 119 75 179 75 209 101 224 135 220 225 175 261 128 261 81 224 74 135 88 99
+
 wheel
 false
 0
@@ -1732,12 +1876,14 @@ Line -7500403 true 216 40 79 269
 Line -7500403 true 40 84 269 221
 Line -7500403 true 40 216 269 79
 Line -7500403 true 84 40 221 269
+
 wolf
 false
 0
 Polygon -16777216 true false 253 133 245 131 245 133
 Polygon -7500403 true true 2 194 13 197 30 191 38 193 38 205 20 226 20 257 27 265 38 266 40 260 31 253 31 230 60 206 68 198 75 209 66 228 65 243 82 261 84 268 100 267 103 261 77 239 79 231 100 207 98 196 119 201 143 202 160 195 166 210 172 213 173 238 167 251 160 248 154 265 169 264 178 247 186 240 198 260 200 271 217 271 219 262 207 258 195 230 192 198 210 184 227 164 242 144 259 145 284 151 277 141 293 140 299 134 297 127 273 119 270 105
 Polygon -7500403 true true -1 195 14 180 36 166 40 153 53 140 82 131 134 133 159 126 188 115 227 108 236 102 238 98 268 86 269 92 281 87 269 103 269 113
+
 x
 false
 0
