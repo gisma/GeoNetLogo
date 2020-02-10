@@ -600,7 +600,7 @@ ticks
 BUTTON
 210
 15
-295
+315
 48
 NIL
 setup
@@ -615,7 +615,7 @@ NIL
 1
 
 BUTTON
-350
+330
 15
 435
 48
@@ -640,7 +640,7 @@ walker-vision-dist
 walker-vision-dist
 1
 200
-200.0
+1.0
 1
 1
 NIL
@@ -648,9 +648,9 @@ HORIZONTAL
 
 SWITCH
 215
-350
+380
 325
-383
+413
 show-goal
 show-goal
 1
@@ -659,9 +659,9 @@ show-goal
 
 CHOOSER
 15
-375
+380
 145
-420
+425
 p_color
 p_color
 "red" "orange" "grey" "green"
@@ -669,9 +669,9 @@ p_color
 
 BUTTON
 15
-425
+430
 145
-465
+470
 NIL
 draw-world-items
 T
@@ -716,20 +716,20 @@ HORIZONTAL
 
 SWITCH
 215
-310
+340
 325
-343
+373
 vis-vision
 vis-vision
-0
+1
 1
 -1000
 
 TEXTBOX
 220
-285
+315
 445
-321
+351
 -------runtime visualisation-------
 15
 0.0
@@ -737,9 +737,9 @@ TEXTBOX
 
 TEXTBOX
 0
-320
+325
 170
-356
+361
 ----------drawing----------
 15
 12.0
@@ -758,9 +758,9 @@ count-of-trampling
 
 CHOOSER
 15
-510
+515
 145
-555
+560
 preset-roads
 preset-roads
 "triangle" "square" "X" "none"
@@ -768,9 +768,9 @@ preset-roads
 
 SLIDER
 15
-475
+480
 145
-508
+513
 road-width
 road-width
 1
@@ -782,13 +782,13 @@ NIL
 HORIZONTAL
 
 SWITCH
-330
-350
-440
-383
+205
+525
+310
+558
 message
 message
-1
+0
 1
 -1000
 
@@ -814,9 +814,9 @@ TEXTBOX
 
 SWITCH
 330
-310
+340
 440
-343
+373
 vis-pop
 vis-pop
 1
@@ -908,10 +908,10 @@ PENS
 "default" 50.0 1 -16777216 true "" "histogram spop"
 
 BUTTON
-350
-55
+330
+50
 435
-88
+83
 go-once
 go
 NIL
@@ -926,9 +926,9 @@ NIL
 
 BUTTON
 195
-135
+105
 315
-168
+138
 remove walkers
 die
 NIL
@@ -943,9 +943,9 @@ NIL
 
 BUTTON
 195
-215
+185
 315
-248
+218
 rescale pop
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\n
 NIL
@@ -960,9 +960,9 @@ NIL
 
 BUTTON
 195
-175
+145
 315
-208
+178
 drop lowlim pop
 \n   let llim patches  with [popularity <= pop-lowlimit]\n   ask llim with [pcolor != orange and pcolor != red][set pcolor green]\n
 NIL
@@ -977,9 +977,9 @@ NIL
 
 TEXTBOX
 225
-115
+85
 435
-141
+111
 ----------------Helpers---------------
 12
 0.0
@@ -987,9 +987,9 @@ TEXTBOX
 
 BUTTON
 325
-175
+145
 450
-208
+178
 export world
 export-world (word \"export-world \" behaviorspace-experiment-name behaviorspace-run-number \".csv\")\n
 NIL
@@ -1004,9 +1004,9 @@ NIL
 
 BUTTON
 325
-215
+185
 450
-248
+218
 export distribution
 export-plot \"number of patches\"  (word \"export-plot \" behaviorspace-experiment-name behaviorspace-run-number \"_number-of-patches_decentile.csv\")
 NIL
@@ -1021,9 +1021,9 @@ NIL
 
 BUTTON
 325
-135
+105
 450
-168
+138
 export scaled view
 let pmax max [popularity] of patches\nlet llim patches  with [popularity >= pop-lowlimit]\nask llim with [pcolor != orange  and pcolor != red]\n[ set pcolor scale-color magenta popularity pop-lowlimit pmax ]\nask turtles [die]\nexport-view user-new-file \n\n
 NIL
@@ -1037,10 +1037,10 @@ NIL
 1
 
 BUTTON
-210
-55
-295
-88
+205
+485
+310
+518
 NIL
 help\n
 NIL
@@ -1055,9 +1055,9 @@ NIL
 
 SLIDER
 15
-340
+345
 145
-373
+378
 line-width
 line-width
 1
@@ -1075,7 +1075,7 @@ SWITCH
 323
 line-not-cone
 line-not-cone
-0
+1
 1
 -1000
 
